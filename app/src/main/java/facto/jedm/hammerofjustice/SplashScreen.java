@@ -6,20 +6,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class SplashScreen extends AppCompatActivity {
+    private static final int TIME_SPLASH = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        Handler handle = new Handler();
-
-        handle.postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 openGameMenu();
             }
-        }, 2000);
+        }, TIME_SPLASH);
     }
 
     private void openGameMenu() {

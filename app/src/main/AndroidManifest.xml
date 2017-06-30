@@ -9,14 +9,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppCompat.TelaCheia">
 
-        <activity android:name=".SplashScreen" android:screenOrientation="portrait">
+        <activity
+            android:name=".SplashScreen"
+            android:screenOrientation="portrait"
+         >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".MenuScene" />
+        <activity
+            android:name=".MenuScene"
+            android:theme="@style/AppTheme"
+        >
+        </activity>
     </application>
 
 </manifest>
