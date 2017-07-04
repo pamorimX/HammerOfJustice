@@ -80,6 +80,27 @@ public abstract class AGScene
 		fBlue = pBlue;
 		AGGameManager.vrOpenGL.glClearColor(fRed, fGreen, fBlue, 1.0f);
 	}
+
+	/*******************************************
+	 * Name: setBackgroundColor()
+	 * Description: sets background color for scene
+	 * Parameters: String
+	 * Returns: void
+	 ******************************************/
+	public void setSceneBackgroundColor(String pColor)
+	{
+		try
+		{
+			fRed = Integer.parseInt(pColor.substring(1, 3), 16);
+			fGreen = Integer.parseInt(pColor.substring(3, 5), 16);
+			fBlue = Integer.parseInt(pColor.substring(5, 7), 16);
+			AGGameManager.vrOpenGL.glClearColor(fRed, fGreen, fBlue, 1.0f);
+		}
+		catch (StringIndexOutOfBoundsException siobe)
+		{
+			System.out.println("Invalid color parameter.\ne.g., \'#AB01EF\'");
+		}
+	}
 	
 	/*******************************************
 	* Name: render()

@@ -22,7 +22,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void openGameMenu() {
-        Intent intent = new Intent(SplashScreen.this, MenuScene.class);
+        Intent intent = new Intent(SplashScreen.this, LoadGame.class);
         startActivity(intent);
         finish();
     }
