@@ -15,7 +15,7 @@ public class CreditsScene extends AGScene {
 
     @Override
     public void init() {
-        background = createSprite(R.drawable.background, 1, 1);
+        background = createSprite(R.drawable.background_credits, 1, 1);
         background.setScreenPercent(100, 100);
         background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);

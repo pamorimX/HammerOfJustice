@@ -15,7 +15,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MenuScene" android:theme="@style/AppTheme" android:screenOrientation="portrait"></activity>
+        <activity android:name=".MenuScene" android:theme="@style/AppTheme"></activity>
         <activity android:name=".LoadGame"></activity>
     </application>
 

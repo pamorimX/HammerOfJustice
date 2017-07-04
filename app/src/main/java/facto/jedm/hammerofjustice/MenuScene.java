@@ -6,9 +6,11 @@ import android.cg.com.megavirada.AndGraph.AGScene;
 import android.cg.com.megavirada.AndGraph.AGScreenManager;
 import android.cg.com.megavirada.AndGraph.AGSoundManager;
 import android.cg.com.megavirada.AndGraph.AGSprite;
+import android.util.Log;
 
 public class MenuScene extends AGScene {
     private static final String TAG = "Log de Menu";
+    AGSprite background = null;
     AGSprite playButton = null;
     AGSprite creditsButton = null;
     AGSprite exitButton = null;
@@ -20,28 +22,35 @@ public class MenuScene extends AGScene {
 
     @Override
     public void init() {
+        Log.i(TAG, Integer.toString(AGScreenManager.iScreenWidth));
+        Log.i(TAG, Integer.toString(AGScreenManager.iScreenHeight));
+
         codigoEfeito = AGSoundManager.vrSoundEffects.loadSoundEffect("abutre.mp4");
+
+        // Carregando plano de fundo
+        // setSceneBackgroundColor("#FFF600");
+        background = createSprite(R.drawable.background_menu, 1, 1);
+        background.setScreenPercent(100, 100);
+        background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
+        background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
         // Criando e definindo botão jogar
         playButton = this.createSprite(R.drawable.play, 1, 1);
-        playButton.setScreenPercent(8, 4);
+        playButton.setScreenPercent(12, 7);
         playButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        playButton.vrPosition.setY(AGScreenManager.iScreenHeight / ( (float) 4 / 3 ) );
+        playButton.vrPosition.setY(AGScreenManager.iScreenHeight / ((float) 4 / 3));
 
         // Criando e definindo botão créditos
         creditsButton = this.createSprite(R.drawable.about, 1, 1);
-        creditsButton.setScreenPercent(8, 4);
+        creditsButton.setScreenPercent(12, 7);
         creditsButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        creditsButton.vrPosition.setY(AGScreenManager.iScreenHeight / 4 / 2 );
+        creditsButton.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
         // Criando e definindo botão exit
         exitButton = this.createSprite(R.drawable.exit, 1, 1);
-        exitButton.setScreenPercent(8, 4);
+        exitButton.setScreenPercent(12, 7);
         exitButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        exitButton.vrPosition.setY(AGScreenManager.iScreenHeight / 4 / 1 );
-
-        // Carregando plano de fundo
-        setSceneBackgroundColor("#FFF600");
+        exitButton.vrPosition.setY(AGScreenManager.iScreenHeight / 4);
 
         // Carregando trilha sonora e mantendo-a em repetição
         AGSoundManager.vrMusic.loadMusic("abutre.mp4", true);

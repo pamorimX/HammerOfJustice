@@ -69,7 +69,7 @@ public abstract class AGScene
 	
 	/*******************************************
 	* Name: setBackgroundColor()
-	* Description: sets background color for scene
+	* Description: sets background_credits color for scene
 	* Parameters: float, float, float
 	* Returns: void
 	******************************************/
@@ -83,7 +83,7 @@ public abstract class AGScene
 
 	/*******************************************
 	 * Name: setBackgroundColor()
-	 * Description: sets background color for scene
+	 * Description: sets background_credits color for scene
 	 * Parameters: String
 	 * Returns: void
 	 ******************************************/
