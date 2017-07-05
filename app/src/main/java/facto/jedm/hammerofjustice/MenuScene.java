@@ -73,13 +73,13 @@ public class MenuScene extends AGScene {
     @Override
     public void loop() {
         if (playButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            //vrGameManager.setCurrentScene(1);
-            Log.i(TAG, AGInputManager.vrTouchEvents.getLastPosition().toString());
+            vrGameManager.setCurrentScene(1);
+            //Log.i(TAG, AGInputManager.vrTouchEvents.getLastPosition().toString());
         }
 
         if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            //vrGameManager.setCurrentScene(2);
-            Log.i(TAG, AGInputManager.vrTouchEvents.getLastPosition().toString());
+            vrGameManager.setCurrentScene(2);
+            //Log.i(TAG, AGInputManager.vrTouchEvents.getLastPosition().toString());
         }
 
         if (exitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
