@@ -9,6 +9,9 @@ import android.cg.com.megavirada.AndGraph.AGSprite;
 import android.util.Log;
 
 public class MenuScene extends AGScene {
+    // TODO: 05/07/17 Fixar a orientação para portrait
+    // TODO: 05/07/17 Providenciar background da tela de menu
+    
     private static final String TAG = "Log de Menu";
     AGSprite background = null;
     AGSprite playButton = null;
@@ -28,7 +31,7 @@ public class MenuScene extends AGScene {
         codigoEfeito = AGSoundManager.vrSoundEffects.loadSoundEffect("abutre.mp4");
 
         // Carregando plano de fundo
-        // setSceneBackgroundColor("#FFF600");
+        //setSceneBackgroundColor("#FFF600");
         background = createSprite(R.drawable.background_menu, 1, 1);
         background.setScreenPercent(100, 100);
         background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
@@ -69,13 +72,18 @@ public class MenuScene extends AGScene {
 
     @Override
     public void loop() {
-        if (playButton.collide(AGInputManager.vrTouchEvents.getLastPosition()))
-            vrGameManager.setCurrentScene(1);
+        if (playButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            //vrGameManager.setCurrentScene(1);
+            Log.i(TAG, AGInputManager.vrTouchEvents.getLastPosition().toString());
+        }
 
-        if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition()))
-            vrGameManager.setCurrentScene(2);
+        if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            //vrGameManager.setCurrentScene(2);
+            Log.i(TAG, AGInputManager.vrTouchEvents.getLastPosition().toString());
+        }
 
-        if (exitButton.collide(AGInputManager.vrTouchEvents.getLastPosition()))
+        if (exitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
             vrGameManager.vrActivity.finish();
+        }
     }
 }

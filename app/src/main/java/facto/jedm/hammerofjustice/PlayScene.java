@@ -12,7 +12,6 @@ public class PlayScene extends AGScene {
 
     @Override
     public void init() {
-
     }
 
     @Override

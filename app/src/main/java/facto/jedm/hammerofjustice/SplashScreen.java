@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class SplashScreen extends AppCompatActivity {
+    // TODO: 05/07/17 Providenciar arte para exibição na animação inicial do jogo
     private static final int TIME_SPLASH = 2000;
 
     @Override
@@ -22,8 +23,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void openGameMenu() {
-        Intent intent = new Intent(SplashScreen.this, LoadGame.class);
-        startActivity(intent);
+        startActivity(new Intent(SplashScreen.this, LoadGame.class));
         finish();
     }
 }

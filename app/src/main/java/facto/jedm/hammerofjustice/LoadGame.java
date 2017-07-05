@@ -10,12 +10,8 @@ public class LoadGame extends AGActivityGame {
         super.onCreate(savedInstanceState);
         init(this, false);
 
-        MenuScene menuScene = new MenuScene(this.vrManager);
-        PlayScene playScene = new PlayScene(this.vrManager);
-        CreditsScene creditsScene = new CreditsScene(this.vrManager);
-
-        vrManager.addScene(menuScene);
-        vrManager.addScene(playScene);
-        vrManager.addScene(creditsScene);
+        vrManager.addScene(new MenuScene(this.vrManager));
+        vrManager.addScene(new PlayScene(this.vrManager));
+        vrManager.addScene(new CreditsScene(this.vrManager));
     }
 }
