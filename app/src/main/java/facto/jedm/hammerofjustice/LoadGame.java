@@ -8,10 +8,10 @@ public class LoadGame extends AGActivityGame {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init(this, false);
+        init(this, true);
 
-        vrManager.addScene(new MenuScene(this.vrManager));
+        //vrManager.addScene(new MenuScene(this.vrManager));
         vrManager.addScene(new PlayScene(this.vrManager));
-        vrManager.addScene(new CreditsScene(this.vrManager));
+        //vrManager.addScene(new CreditsScene(this.vrManager));
     }
 }

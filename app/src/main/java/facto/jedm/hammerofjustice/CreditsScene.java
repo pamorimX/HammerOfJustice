@@ -34,7 +34,7 @@ public class CreditsScene extends AGScene {
     @Override
     public void loop() {
         if (AGInputManager.vrTouchEvents.backButtonClicked()) {
-            vrGameManager.setCurrentScene(0);
+            vrGameManager.setCurrentScene(2);
             return;
         }
     }
