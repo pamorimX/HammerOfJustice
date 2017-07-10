@@ -18,7 +18,7 @@ public class PlayScene extends AGScene {
     ArrayList<AGSprite> hammerVector = null;
     ArrayList<AGSprite> condemnationVector = null;
 
-    AGSprite[] vultures = new AGSprite[2];
+    AGSprite[] vultures = new AGSprite[4];
 
     // Cria o tempo para controle de movimento de Coro
     AGTimer couroTime = null;
@@ -60,8 +60,8 @@ public class PlayScene extends AGScene {
         //background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
         // Carrega a imagem de Coro na base da tela
-        couro = createSprite(R.drawable.ferreo_coro, 1, 1);
-        couro.setScreenPercent(12, 20);
+        couro = createSprite(R.drawable.couro, 1, 1);
+        couro.setScreenPercent(9, 15);
         couro.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         couro.vrPosition.setY(couro.getSpriteHeight() / 2);
 
@@ -95,17 +95,29 @@ public class PlayScene extends AGScene {
 
         // Carrega os sprites dos vultures
         vultures[0] = createSprite(R.drawable.molusco, 1, 1);
-        vultures[0].setScreenPercent(20, 12);
+        vultures[0].setScreenPercent(15, 9);
         vultures[0].iMirror = AGSprite.HORIZONTAL;
         vultures[0].vrDirection.fX = 1;
         vultures[0].vrPosition.fX = -vultures[0].getSpriteWidth() / 2;
         vultures[0].vrPosition.fY = AGScreenManager.iScreenHeight - vultures[0].getSpriteHeight() / 2 - topBar.getSpriteHeight();
 
         vultures[1] = createSprite(R.drawable.vampirao, 1, 1);
-        vultures[1].setScreenPercent(20, 12);
+        vultures[1].setScreenPercent(15, 9);
         vultures[1].vrDirection.fX = -1;
         vultures[1].vrPosition.fX = AGScreenManager.iScreenWidth + vultures[1].getSpriteWidth() / 2;
         vultures[1].vrPosition.fY = vultures[0].vrPosition.fY - vultures[1].getSpriteHeight();
+
+        vultures[2] = createSprite(R.drawable.carreirinho, 1, 1);
+        vultures[2].setScreenPercent(15, 9);
+        vultures[2].vrDirection.fX = -1;
+        vultures[2].vrPosition.fX = AGScreenManager.iScreenWidth + vultures[2].getSpriteWidth() / 2;
+        vultures[2].vrPosition.fY = vultures[1].vrPosition.fY - vultures[2].getSpriteHeight();
+
+        vultures[3] = createSprite(R.drawable.toupeirona, 1, 1);
+        vultures[3].setScreenPercent(15, 9);
+        vultures[3].vrDirection.fX = -1;
+        vultures[3].vrPosition.fX = AGScreenManager.iScreenWidth + vultures[3].getSpriteWidth() / 2;
+        vultures[3].vrPosition.fY = vultures[2].vrPosition.fY - vultures[3].getSpriteHeight();
     }
 
     @Override
@@ -140,13 +152,13 @@ public class PlayScene extends AGScene {
             updateHammers();
             createHammers();
             updateVultures();
-            verificaColisaoBalasNavios();
+            verifyHammerVulturesColision();
             updateCondemnations();
             updateScoreboard();
         }
     }
 
-    // Metodo criado para atualizar quadros do scoreboard
+    // Metodo criado para atualizar quadros do Placar
     private void updateScoreboard() {
         if (scoreTime > 0) {
             //for (AGSprite digito : scoreboard) {
@@ -169,7 +181,7 @@ public class PlayScene extends AGScene {
 
     }
 
-    // Metodo utilizado para reciclar as explosoes
+    // Metodo utilizado para reciclar o vetor de Condenação
     private void updateCondemnations() {
         for (AGSprite comndenation : condemnationVector) {
             if (comndenation.getCurrentAnimation().isAnimationEnded()) {
@@ -178,8 +190,8 @@ public class PlayScene extends AGScene {
         }
     }
 
-    // Metodo utilizado para criar uma comndenation
-    private void criaExplosao(float x, float y) {
+    // Metodo utilizado para criar animação ao abater um Abutre
+    private void createDowncastAnimation(float x, float y) {
         for (AGSprite comndenation : condemnationVector) {
             if (comndenation.bRecycled) {
                 comndenation.bRecycled = false;
@@ -190,36 +202,36 @@ public class PlayScene extends AGScene {
             }
         }
 
-        AGSprite novaExplosao = createSprite(R.drawable.comndenation, 4, 2);
-        novaExplosao.setScreenPercent(20, 12);
-        novaExplosao.addAnimation(10, false, 0, 7);
-        novaExplosao.vrPosition.fX = x;
-        novaExplosao.vrPosition.fY = y;
-        condemnationVector.add(novaExplosao);
+        AGSprite newCondemnation = createSprite(R.drawable.comndenation, 4, 2);
+        newCondemnation.setScreenPercent(20, 12);
+        newCondemnation.addAnimation(10, false, 0, 7);
+        newCondemnation.vrPosition.fX = x;
+        newCondemnation.vrPosition.fY = y;
+        condemnationVector.add(newCondemnation);
     }
 
-    // Metodo que verifica a colisao entre b alas e vultures
-    private void verificaColisaoBalasNavios() {
+    // Metodo que verifica a colisão entre Martelos e Abutres
+    private void verifyHammerVulturesColision() {
         for (AGSprite hammer : hammerVector) {
             if (hammer.bRecycled) {
                 continue;
             }
-            for (AGSprite navio : vultures) {
-                if (hammer.collide(navio)) {
+            for (AGSprite vulture : vultures) {
+                if (hammer.collide(vulture)) {
                     scoreTime += 50;
-                    criaExplosao(navio.vrPosition.fX, navio.vrPosition.fY);
+                    createDowncastAnimation(vulture.vrPosition.fX, vulture.vrPosition.fY);
                     hammer.bRecycled = true;
                     hammer.bVisible = false;
                     AGSoundManager.vrSoundEffects.play(effectDowncastVulture);
 
-                    if (navio.vrDirection.fX == 1) {
-                        navio.vrDirection.fX = -1;
-                        navio.iMirror = AGSprite.NONE;
-                        navio.vrPosition.fX = AGScreenManager.iScreenWidth + navio.getSpriteWidth() / 2;
+                    if (vulture.vrDirection.fX == 1) {
+                        vulture.vrDirection.fX = -1;
+                        vulture.iMirror = AGSprite.NONE;
+                        vulture.vrPosition.fX = AGScreenManager.iScreenWidth + vulture.getSpriteWidth() / 2;
                     } else {
-                        navio.vrDirection.fX = 1;
-                        navio.iMirror = AGSprite.HORIZONTAL;
-                        navio.vrPosition.fX = -navio.getSpriteWidth();
+                        vulture.vrDirection.fX = 1;
+                        vulture.iMirror = AGSprite.HORIZONTAL;
+                        vulture.vrPosition.fX = -vulture.getSpriteWidth();
                     }
                     break;
                 }
@@ -228,29 +240,29 @@ public class PlayScene extends AGScene {
         }
     }
 
-    // Metodo que atualiza a posicao dos vultures
+    // Metodo que atualiza a posicao dos Abutres
     private void updateVultures() {
-        for (AGSprite navio : vultures) {
-            navio.vrPosition.fX += 5 * navio.vrDirection.fX;
-            if (navio.vrDirection.fX == 1) {
-                if (navio.vrPosition.fX > AGScreenManager.iScreenWidth + navio.getSpriteWidth() / 2) {
-                    navio.iMirror = AGSprite.NONE;
-                    navio.vrDirection.fX = -1;
+        for (AGSprite vulture : vultures) {
+            vulture.vrPosition.fX += 5 * vulture.vrDirection.fX;
+            if (vulture.vrDirection.fX == 1) {
+                if (vulture.vrPosition.fX > AGScreenManager.iScreenWidth + vulture.getSpriteWidth() / 2) {
+                    vulture.iMirror = AGSprite.NONE;
+                    vulture.vrDirection.fX = -1;
                 }
             } else {
-                if (navio.vrPosition.fX <= -navio.getSpriteWidth() / 2) {
-                    navio.iMirror = AGSprite.HORIZONTAL;
-                    navio.vrDirection.fX = 1;
+                if (vulture.vrPosition.fX <= -vulture.getSpriteWidth() / 2) {
+                    vulture.iMirror = AGSprite.HORIZONTAL;
+                    vulture.vrDirection.fX = 1;
                 }
             }
         }
     }
 
-    // Coloca uma hammer no vetor de tiros
+    // Coloca um Martelo no vetor de martelos
     private void createHammers() {
         hammerTime.update();
 
-        // Tenta reciclar uma hammer criada anteriormente
+        // Tenta reciclar um Martelo criado anteriormente
         if (AGInputManager.vrTouchEvents.screenClicked()) {
             if (!hammerTime.isTimeEnded()) {
                 return;
@@ -268,11 +280,11 @@ public class PlayScene extends AGScene {
                 }
             }
 
-            AGSprite novaBala = createSprite(R.drawable.hammer, 1, 1);
-            novaBala.setScreenPercent(8, 5);
-            novaBala.vrPosition.fX = couro.vrPosition.fX;
-            novaBala.vrPosition.fY = couro.getSpriteHeight() + novaBala.getSpriteHeight() / 2;
-            hammerVector.add(novaBala);
+            AGSprite newHammer = createSprite(R.drawable.hammer, 1, 1);
+            newHammer.setScreenPercent(8, 5);
+            newHammer.vrPosition.fX = couro.vrPosition.fX;
+            newHammer.vrPosition.fY = couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
+            hammerVector.add(newHammer);
         }
     }
 
