@@ -7,7 +7,6 @@ import android.cg.com.megavirada.AndGraph.AGScreenManager;
 import android.cg.com.megavirada.AndGraph.AGSoundManager;
 import android.cg.com.megavirada.AndGraph.AGSprite;
 import android.cg.com.megavirada.AndGraph.AGTimer;
-import android.cg.com.megavirada.AndGraph.AGVector2D;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -35,17 +34,18 @@ public class PlayScene extends AGScene {
     int scoreTime = 0;
 
     // Cria sprites de fundo e elementos controláveis
-    AGSprite background = null;
+    //AGSprite background = null;
     AGSprite couro = null;
     AGSprite arrow_left = null;
     AGSprite arrow_right = null;
     AGSprite little_hammer = null;
     AGSprite big_hammer = null;
+    AGSprite shoot = null;
+    AGSprite paused = null;
     AGSprite topBar = null;
     AGSprite bottomBar = null;
 
-    boolean bPause = false;
-    Float alignmentFactor = null;
+    float alignmentFactor;
 
     public PlayScene(AGGameManager pManager) {
         super(pManager);
@@ -62,13 +62,13 @@ public class PlayScene extends AGScene {
         condemnationVector = new ArrayList<AGSprite>();
 
         // Seta a cor do fundo
-        // setSceneBackgroundColor(0, 0, 0);
+        setSceneBackgroundColor("#FFFFFF");
 
         // Carrega a imagem de fundo 100x100 no centro da tela
-        background = createSprite(R.drawable.background_play, 1, 1);
-        background.setScreenPercent(100, 100);
-        background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
+        //background = createSprite(R.drawable.background_play, 1, 1);
+        //background.setScreenPercent(100, 100);
+        //background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
+        //background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
         topBar = createSprite(R.drawable.top_bar, 1, 1);
         topBar.setScreenPercent(100, 10);
@@ -76,6 +76,7 @@ public class PlayScene extends AGScene {
         topBar.vrPosition.fY = AGScreenManager.iScreenHeight - topBar.getSpriteHeight() / 2;
         topBar.bAutoRender = false;
 
+        // Barra de controle (inferior)
         bottomBar = createSprite(R.drawable.top_bar, 1, 1);
         bottomBar.setScreenPercent(100, 10);
         bottomBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
@@ -92,36 +93,50 @@ public class PlayScene extends AGScene {
 
         // Carrega setas direcionais
         arrow_left = createSprite(R.drawable.arrow, 1, 1);
-        arrow_left.setScreenPercent(8, 6);
-        arrow_left.vrPosition.setX(2 * arrow_left.getSpriteWidth());
+        arrow_left.setScreenPercent(10, 8);
         arrow_left.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
 
         arrow_right = createSprite(R.drawable.arrow, 1, 1);
-        arrow_right.setScreenPercent(8, 6);
-        arrow_right.vrPosition.setX(4 * arrow_right.getSpriteWidth());
+        arrow_right.setScreenPercent(10, 8);
         arrow_right.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
         arrow_right.fAngle = 180;
 
-        // Carrega lançador de martelos
+        // Carrega selecionador de martelos
         little_hammer = createSprite(R.drawable.little_hammer, 1, 1);
-        little_hammer.setScreenPercent(9, 5);
-        little_hammer.vrPosition.setX(AGScreenManager.iScreenWidth - (4 * arrow_left.getSpriteWidth()));
+        little_hammer.setScreenPercent(13, 8);
         little_hammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
 
         big_hammer = createSprite(R.drawable.big_hammer, 1, 1);
-        big_hammer.setScreenPercent(9, 5);
-        big_hammer.vrPosition.setX(AGScreenManager.iScreenWidth - (2 * arrow_right.getSpriteWidth()));
+        big_hammer.setScreenPercent(13, 8);
         big_hammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
 
+        // Carrega lançados de martelos
+        shoot = createSprite(R.drawable.shoot, 1, 1);
+        shoot.setScreenPercent(13, 8);
+        shoot.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+
+        // Calcula o espaço ocupado por todos os sprites da barra de controle (inferior)
+        float ctrlSpritesWidth = arrow_left.getSpriteWidth() + arrow_right.getSpriteWidth() + little_hammer.getSpriteWidth() + big_hammer.getSpriteWidth() + shoot.getSpriteWidth();
+
+        // Calcula espaço livre TOTAL na barra de controle (inferior)
+        float ctrlFreeSpace = 1080 - ctrlSpritesWidth;
+
+        // Calcula espaço livre entre sprites da barra de controle (inferior)
+        float ctrlFillSpace = ctrlFreeSpace / 6;
+
+        arrow_left.vrPosition.setX(ctrlFillSpace + arrow_left.getSpriteWidth() / 2);
+        arrow_right.vrPosition.setX(arrow_left.vrPosition.fX + ctrlFillSpace + arrow_right.getSpriteWidth());
+        little_hammer.vrPosition.setX(arrow_right.vrPosition.fX + ctrlFillSpace + little_hammer.getSpriteWidth());
+        big_hammer.vrPosition.setX(little_hammer.vrPosition.fX + ctrlFillSpace + big_hammer.getSpriteWidth());
+        shoot.vrPosition.setX(big_hammer.vrPosition.fX + ctrlFillSpace + shoot.getSpriteWidth());
+
         // Configura os sprites do placar
-        int multiplier = 1;
         for (int pos = 0; pos < scoreboard.length; pos++) {
             scoreboard[pos] = createSprite(R.drawable.font, 4, 4);
             scoreboard[pos].setScreenPercent(8, 8);
             scoreboard[pos].vrPosition.fY = topBar.vrPosition.fY;
-            scoreboard[pos].vrPosition.fX = 20 + multiplier * scoreboard[pos].getSpriteWidth();
+            scoreboard[pos].vrPosition.fX = 20 + (pos + 1) * scoreboard[pos].getSpriteWidth();
             scoreboard[pos].bAutoRender = false;
-            multiplier++;
             for (int i = 0; i < 10; i++) {
                 scoreboard[pos].addAnimation(1, false, i);
             }
@@ -140,7 +155,6 @@ public class PlayScene extends AGScene {
         vultures[0] = createSprite(R.drawable.molusco, 1, 4);
         vultures[0].setScreenPercent(20, 12);
         vultures[0].vrDirection.fX = 1;
-        vultures[0].iMirror = AGSprite.HORIZONTAL;
         vultures[0].addAnimation(10, true, 0, 1, 2);
         vultures[0].vrPosition.fX = -vultures[0].getSpriteWidth() / 2;
         vultures[0].vrPosition.fY = AGScreenManager.iScreenHeight - vultures[0].getSpriteHeight() / 2 - topBar.getSpriteHeight();
@@ -155,11 +169,17 @@ public class PlayScene extends AGScene {
 
         vultures[2] = createSprite(R.drawable.toupeirona, 4, 2);
         vultures[2].setScreenPercent(20, 12);
-        vultures[2].iMirror = AGSprite.HORIZONTAL;
         vultures[2].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7);
-        vultures[2].vrDirection.fX = -1;
-        vultures[2].vrPosition.fX = AGScreenManager.iScreenWidth + vultures[2].getSpriteWidth() / 2;
+        vultures[2].vrDirection.fX = 1;
+        //vultures[2].vrPosition.fX = AGScreenManager.iScreenWidth + vultures[2].getSpriteWidth() / 2;
+        vultures[2].vrPosition.fX = -vultures[2].getSpriteWidth() / 2;
         vultures[2].vrPosition.fY = vultures[1].vrPosition.fY - vultures[2].getSpriteHeight();
+
+        paused = createSprite(R.drawable.paused, 1, 1);
+        paused.setScreenPercent(31, 7);
+        paused.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
+        paused.vrPosition.fY = AGScreenManager.iScreenHeight / 2;
+        paused.bVisible = false;
     }
 
     @Override
@@ -185,14 +205,15 @@ public class PlayScene extends AGScene {
     public void loop() {
         if (AGInputManager.vrTouchEvents.backButtonClicked()) {
             vrGameManager.setCurrentScene(0);
-            bPause = !bPause;
+            paused.bVisible = !paused.bVisible;
             return;
         }
 
-        if (bPause == false) {
+        if (paused.bVisible == false) {
             createHammers();
             createMoney();
             verifyHammerVulturesColision();
+            verifyMoneyCouroColision();
             updateCouroMovement();
             updateVultures();
             updateCondemnations();
@@ -207,7 +228,8 @@ public class PlayScene extends AGScene {
         hammerTime.update();
 
         // Tenta reciclar um Martelo criado anteriormente
-        if (AGInputManager.vrTouchEvents.screenClicked()) {
+        //if (AGInputManager.vrTouchEvents.screenClicked()) {
+        if (shoot.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
             if (!hammerTime.isTimeEnded()) {
                 return;
             }
@@ -239,8 +261,7 @@ public class PlayScene extends AGScene {
         for (AGSprite vulture : vultures) {
             if (vulture.vrPosition.fX <= couro.vrPosition.fX) {
                 alignmentFactor = vulture.vrPosition.fX / couro.vrPosition.fX;
-            }
-            else {
+            } else {
                 alignmentFactor = couro.vrPosition.fX / vulture.vrPosition.fX;
             }
 
@@ -301,23 +322,45 @@ public class PlayScene extends AGScene {
         }
     }
 
+    // Método que verifica a colisão entre propina e couro
+    private void verifyMoneyCouroColision() {
+        for (AGSprite money : moneyVector) {
+            if (money.bRecycled) {
+                continue;
+            }
+            if (money.collide(couro)) {
+                scoreTime -= 50;
+                //createDowncastAnimation(couro.vrPosition.fX, couro.vrPosition.fY);
+                money.bRecycled = true;
+                money.bVisible = false;
+                //AGSoundManager.vrSoundEffects.play(effectDowncastVulture);
+
+                break;
+            }
+        }
+    }
+
     // Metodo criado para movimentar
     private void updateCouroMovement() {
 
         couroTime.update();
         if (couroTime.isTimeEnded()) {
             couroTime.restart();
-            if (AGInputManager.vrAccelerometer.getAccelX() > 2.0f) {
+            //if (AGInputManager.vrAccelerometer.getAccelX() > 2.0f) {
+            if (arrow_right.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() <= AGScreenManager.iScreenWidth - couro.getSpriteWidth() / 2) {
                     AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() + 10);
                 }
-            } else if (AGInputManager.vrAccelerometer.getAccelX() < -2.0f) {
+                //} else if (AGInputManager.vrAccelerometer.getAccelX() < -2.0f) {
+            } else if (arrow_left.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() > 0 + couro.getSpriteWidth() / 2) {
                     AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() - 10);
                 }
             }
+            //Log.d("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getX()));
+            //Log.d("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getY()));
         }
     }
 
