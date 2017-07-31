@@ -7,15 +7,15 @@
     tools:context="facto.jedm.hammerofjustice.SplashScreen"
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp"
-    android:background="#000"
+    android:background="#000000"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView3"
+    <ImageView
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="@string/hammer_of_justice"
-        android:textSize="24sp" />
+        app:srcCompat="@drawable/logo"
+        android:contentDescription="@string/logo_provis_ria_do_jogo" />
 </RelativeLayout>

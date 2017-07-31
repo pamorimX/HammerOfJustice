@@ -204,12 +204,12 @@ public class PlayScene extends AGScene {
     @Override
     public void loop() {
         if (AGInputManager.vrTouchEvents.backButtonClicked()) {
-            vrGameManager.setCurrentScene(0);
+            //vrGameManager.setCurrentScene(0);
             paused.bVisible = !paused.bVisible;
             return;
         }
 
-        if (paused.bVisible == false) {
+        if (!paused.bVisible) {
             createHammers();
             createMoney();
             verifyHammerVulturesColision();
@@ -220,6 +220,10 @@ public class PlayScene extends AGScene {
             updateHammers();
             updateMoneys();
             updateScoreboard();
+        }
+
+        if (paused.bVisible) {
+
         }
     }
 
@@ -346,21 +350,21 @@ public class PlayScene extends AGScene {
         couroTime.update();
         if (couroTime.isTimeEnded()) {
             couroTime.restart();
-            //if (AGInputManager.vrAccelerometer.getAccelX() > 2.0f) {
             if (arrow_right.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() <= AGScreenManager.iScreenWidth - couro.getSpriteWidth() / 2) {
                     AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() + 10);
                 }
-                //} else if (AGInputManager.vrAccelerometer.getAccelX() < -2.0f) {
             } else if (arrow_left.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() > 0 + couro.getSpriteWidth() / 2) {
                     AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() - 10);
                 }
             }
-            //Log.d("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getX()));
-            //Log.d("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getY()));
+            if (!AGInputManager.vrTouchEvents.screenDragged()) {
+                AGInputManager.vrTouchEvents.fPosX = 0;
+                AGInputManager.vrTouchEvents.fPosY = 0;
+            }
         }
     }
 
@@ -371,14 +375,14 @@ public class PlayScene extends AGScene {
             if (vulture.vrDirection.fX == 1) {
                 // Indo para a direita
                 if (vulture.vrPosition.fX > AGScreenManager.iScreenWidth + vulture.getSpriteWidth() / 2) {
-                    vulture.iMirror = AGSprite.NONE;
                     vulture.vrDirection.fX = -1;
+                    vulture.iMirror = AGSprite.NONE;
                 }
             } else {
                 // Indo para a esquerda
                 if (vulture.vrPosition.fX <= -vulture.getSpriteWidth() / 2) {
-                    vulture.iMirror = AGSprite.HORIZONTAL;
                     vulture.vrDirection.fX = 1;
+                    vulture.iMirror = AGSprite.HORIZONTAL;
                 }
             }
         }

@@ -65,7 +65,7 @@ public class AGTouchScreen implements OnTouchListener
 	}
 	
 	/*******************************************
-	* Name: screenDow()
+	* Name: screenDown()
 	* Description: used to test screen press
 	* Parameters: none
 	* Returns: boolean
