@@ -72,15 +72,11 @@ public class MenuScene extends AGScene {
     public void loop() {
         if (playButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
             vrGameManager.setCurrentScene(1);
-            //Log.i("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getX()));
-            //Log.i("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getY()));
             return;
         }
 
         if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
             vrGameManager.setCurrentScene(2);
-            //Log.i("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getX()));
-            //Log.i("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getY()));
             return;
         }
 

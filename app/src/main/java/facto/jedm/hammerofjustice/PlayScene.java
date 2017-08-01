@@ -20,7 +20,7 @@ public class PlayScene extends AGScene {
     ArrayList<AGSprite> moneyVector = null;
     ArrayList<AGSprite> condemnationVector = null;
 
-    AGSprite[] vultures = new AGSprite[3];
+    AGSprite[] bandits = new AGSprite[3];
 
     // Cria o tempo para controle de movimento de Coro
     AGTimer couroTime = null;
@@ -28,20 +28,24 @@ public class PlayScene extends AGScene {
     AGTimer moneyTime = null;
 
     // Cria a variavel para armazenar o cod efeito som
-    int effectMovement = 0;
-    int effectDowncastVulture = 0;
+    //int effectMovement = 0;
+    int effectDowncastBandit = 0;
     int score = 0;
     int scoreTime = 0;
 
     // Cria sprites de fundo e elementos controláveis
-    //AGSprite background = null;
+    AGSprite background = null;
     AGSprite couro = null;
     AGSprite arrow_left = null;
     AGSprite arrow_right = null;
     AGSprite little_hammer = null;
     AGSprite big_hammer = null;
+    AGSprite little_hammer_selected = null;
+    AGSprite big_hammer_selected = null;
     AGSprite shoot = null;
     AGSprite paused = null;
+    AGSprite resume = null;
+    AGSprite quit = null;
     AGSprite topBar = null;
     AGSprite bottomBar = null;
 
@@ -54,21 +58,18 @@ public class PlayScene extends AGScene {
     @Override
     public void init() {
         // Carrega as imagens na memoria
-        createSprite(R.drawable.hammer, 1, 1).bVisible = false;
-        createSprite(R.drawable.comndenation, 4, 2).bVisible = false;
+        //createSprite(R.drawable.hammer, 1, 1).bVisible = false;
+        //createSprite(R.drawable.comndenation, 4, 2).bVisible = false;
 
         hammerVector = new ArrayList<AGSprite>();
         moneyVector = new ArrayList<AGSprite>();
         condemnationVector = new ArrayList<AGSprite>();
 
-        // Seta a cor do fundo
-        setSceneBackgroundColor("#FFFFFF");
-
         // Carrega a imagem de fundo 100x100 no centro da tela
-        //background = createSprite(R.drawable.background_play, 1, 1);
-        //background.setScreenPercent(100, 100);
-        //background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        //background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
+        background = createSprite(R.drawable.background_play, 1, 1);
+        background.setScreenPercent(100, 100);
+        background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
+        background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
         topBar = createSprite(R.drawable.top_bar, 1, 1);
         topBar.setScreenPercent(100, 10);
@@ -85,19 +86,18 @@ public class PlayScene extends AGScene {
         // Carrega a imagem de Coro na base da tela
         couro = createSprite(R.drawable.couro, 4, 4);
         couro.setScreenPercent(25, 10);
-        couro.addAnimation(10, false, 0);
-        //couro.addAnimation(30, true, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-        //couro.addAnimation(10, true, 0, 2, 4, 6, 8, 10, 12);
+        couro.addAnimation(1, false, 0);
+        couro.addAnimation(30, false, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
         couro.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         couro.vrPosition.setY(bottomBar.getSpriteHeight() + (couro.getSpriteHeight() / 2));
 
         // Carrega setas direcionais
         arrow_left = createSprite(R.drawable.arrow, 1, 1);
-        arrow_left.setScreenPercent(10, 8);
+        arrow_left.setScreenPercent(14, 8);
         arrow_left.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
 
         arrow_right = createSprite(R.drawable.arrow, 1, 1);
-        arrow_right.setScreenPercent(10, 8);
+        arrow_right.setScreenPercent(14, 8);
         arrow_right.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
         arrow_right.fAngle = 180;
 
@@ -109,6 +109,16 @@ public class PlayScene extends AGScene {
         big_hammer = createSprite(R.drawable.big_hammer, 1, 1);
         big_hammer.setScreenPercent(13, 8);
         big_hammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+
+        little_hammer_selected = createSprite(R.drawable.selected_hammer, 1, 1);
+        little_hammer_selected.setScreenPercent(18, 10);
+        little_hammer_selected.vrPosition.setY(little_hammer.vrPosition.getY());
+        little_hammer_selected.bVisible = true;
+
+        big_hammer_selected = createSprite(R.drawable.selected_hammer, 1, 1);
+        big_hammer_selected.setScreenPercent(18, 10);
+        big_hammer_selected.vrPosition.setY(big_hammer.vrPosition.getY());
+        big_hammer_selected.bVisible = false;
 
         // Carrega lançados de martelos
         shoot = createSprite(R.drawable.shoot, 1, 1);
@@ -130,6 +140,9 @@ public class PlayScene extends AGScene {
         big_hammer.vrPosition.setX(little_hammer.vrPosition.fX + ctrlFillSpace + big_hammer.getSpriteWidth());
         shoot.vrPosition.setX(big_hammer.vrPosition.fX + ctrlFillSpace + shoot.getSpriteWidth());
 
+        little_hammer_selected.vrPosition.setX(little_hammer.vrPosition.getX());
+        big_hammer_selected.vrPosition.setX(big_hammer.vrPosition.getX());
+
         // Configura os sprites do placar
         for (int pos = 0; pos < scoreboard.length; pos++) {
             scoreboard[pos] = createSprite(R.drawable.font, 4, 4);
@@ -143,43 +156,58 @@ public class PlayScene extends AGScene {
         }
 
         // Setando tempo de execucao de movimentos de Couro, Martelo e Maço de dinheiro
-        couroTime = new AGTimer(50);
+        couroTime = new AGTimer(25);
         hammerTime = new AGTimer(500);
         moneyTime = new AGTimer(500);
 
         // Criando efeitos sonoros para movimento de Couro e Condenação
-        effectMovement = AGSoundManager.vrSoundEffects.loadSoundEffect("toc.wav");
-        effectDowncastVulture = AGSoundManager.vrSoundEffects.loadSoundEffect("downcast_vulture.mp4");
+        //effectMovement = AGSoundManager.vrSoundEffects.loadSoundEffect("toc.wav");
+        //effectDowncastBandit = AGSoundManager.vrSoundEffects.loadSoundEffect("downcast_bandit.mp4");
 
-        // Carrega os sprites dos vultures
-        vultures[0] = createSprite(R.drawable.molusco, 1, 4);
-        vultures[0].setScreenPercent(20, 12);
-        vultures[0].vrDirection.fX = 1;
-        vultures[0].addAnimation(10, true, 0, 1, 2);
-        vultures[0].vrPosition.fX = -vultures[0].getSpriteWidth() / 2;
-        vultures[0].vrPosition.fY = AGScreenManager.iScreenHeight - vultures[0].getSpriteHeight() / 2 - topBar.getSpriteHeight();
+        // TODO: Corrigir animação michael jackson dos bandidões
+        // Carrega os sprites dos bandits
+        bandits[0] = createSprite(R.drawable.molusco, 1, 4);
+        bandits[0].setScreenPercent(20, 12);
+        bandits[0].vrDirection.fX = 1;
+        bandits[0].addAnimation(10, true, 0, 1, 2);
+        bandits[0].vrPosition.fX = -bandits[0].getSpriteWidth() / 2;
+        bandits[0].vrPosition.fY = AGScreenManager.iScreenHeight - bandits[0].getSpriteHeight() / 2 - topBar.getSpriteHeight();
 
-        vultures[1] = createSprite(R.drawable.vampirao, 4, 2);
-        vultures[1].setScreenPercent(20, 12);
-        vultures[1].iMirror = AGSprite.HORIZONTAL;
-        vultures[1].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7);
-        vultures[1].vrDirection.fX = -1;
-        vultures[1].vrPosition.fX = AGScreenManager.iScreenWidth + vultures[1].getSpriteWidth() / 2;
-        vultures[1].vrPosition.fY = vultures[0].vrPosition.fY - vultures[1].getSpriteHeight();
+        bandits[1] = createSprite(R.drawable.vampirao, 4, 2);
+        bandits[1].setScreenPercent(20, 12);
+        bandits[1].iMirror = AGSprite.HORIZONTAL;
+        bandits[1].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7);
+        bandits[1].vrDirection.fX = -1;
+        bandits[1].vrPosition.fX = AGScreenManager.iScreenWidth + bandits[1].getSpriteWidth() / 2;
+        bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight();
 
-        vultures[2] = createSprite(R.drawable.toupeirona, 4, 2);
-        vultures[2].setScreenPercent(20, 12);
-        vultures[2].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7);
-        vultures[2].vrDirection.fX = 1;
-        //vultures[2].vrPosition.fX = AGScreenManager.iScreenWidth + vultures[2].getSpriteWidth() / 2;
-        vultures[2].vrPosition.fX = -vultures[2].getSpriteWidth() / 2;
-        vultures[2].vrPosition.fY = vultures[1].vrPosition.fY - vultures[2].getSpriteHeight();
+        bandits[2] = createSprite(R.drawable.toupeirona, 4, 2);
+        bandits[2].setScreenPercent(20, 12);
+        bandits[2].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7);
+        bandits[2].vrDirection.fX = 1;
+        //bandits[2].vrPosition.fX = AGScreenManager.iScreenWidth + bandits[2].getSpriteWidth() / 2;
+        bandits[2].vrPosition.fX = -bandits[2].getSpriteWidth() / 2;
+        bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight();
 
-        paused = createSprite(R.drawable.paused, 1, 1);
-        paused.setScreenPercent(31, 7);
+        paused = createSprite(R.drawable.pause_menu, 1, 1);
+        paused.setScreenPercent(93, 39);
         paused.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
         paused.vrPosition.fY = AGScreenManager.iScreenHeight / 2;
         paused.bVisible = false;
+
+//        resume = createSprite(R.drawable.resume, 1, 1);
+//        resume.setScreenPercent(53, 7);
+//        resume.vrPosition.fX = AGScreenManager.iScreenWidth /  2;
+//        resume.vrPosition.fY = paused.getSpriteWidth() / 3;
+//        // TODO:    corrigir posicionamento da altura de continuar
+//        resume.bVisible = false;
+
+        quit = createSprite(R.drawable.quit, 1, 1);
+        quit.setScreenPercent(53, 7);
+        quit.vrPosition.fX = AGScreenManager.iScreenWidth /  2;
+        quit.vrPosition.fY = paused.vrPosition.fY;
+        // TODO:    corrigir posicionamento da altura de continuar
+        quit.bVisible = false;
     }
 
     @Override
@@ -204,26 +232,60 @@ public class PlayScene extends AGScene {
     @Override
     public void loop() {
         if (AGInputManager.vrTouchEvents.backButtonClicked()) {
-            //vrGameManager.setCurrentScene(0);
             paused.bVisible = !paused.bVisible;
+            quit.bVisible = !quit.bVisible;
             return;
         }
 
         if (!paused.bVisible) {
+            selectHammer();
+            stopCouroHammerAnimation();
             createHammers();
             createMoney();
-            verifyHammerVulturesColision();
+            verifyHammerBanditsColision();
             verifyMoneyCouroColision();
             updateCouroMovement();
-            updateVultures();
+            updateBandits();
             updateCondemnations();
             updateHammers();
-            updateMoneys();
+            updateMoney();
             updateScoreboard();
         }
 
         if (paused.bVisible) {
+            if (quit.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                vrGameManager.setCurrentScene(0);
+            }
+        }
+        //Log.d("X - Position", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getX()));
+        //Log.d("Y - Position", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getY()));
+    }
 
+    private void selectHammer() {
+        if (little_hammer_selected.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            if (little_hammer_selected.bVisible) {
+                return;
+            }
+            else {
+                little_hammer_selected.bVisible = !little_hammer_selected.bVisible;
+                big_hammer_selected.bVisible = !big_hammer_selected.bVisible;
+            }
+        }
+
+        else if (big_hammer_selected.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            if (big_hammer_selected.bVisible) {
+                return;
+            }
+            else {
+                little_hammer_selected.bVisible = !little_hammer_selected.bVisible;
+                big_hammer_selected.bVisible = !big_hammer_selected.bVisible;
+            }
+        }
+    }
+
+    private void stopCouroHammerAnimation() {
+        if (couro.getCurrentAnimationIndex() == 1 && couro.getCurrentAnimation().isAnimationEnded()) {
+            couro.setCurrentAnimation(0);
         }
     }
 
@@ -250,11 +312,12 @@ public class PlayScene extends AGScene {
                 }
             }
 
-            AGSprite newHammer = createSprite(R.drawable.hammer, 1, 1);
+            AGSprite newHammer = createSprite(R.drawable.little_hammer, 1, 1);
             newHammer.setScreenPercent(8, 5);
             newHammer.vrPosition.fX = couro.vrPosition.fX;
             newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
             hammerVector.add(newHammer);
+            couro.setCurrentAnimation(1);
         }
     }
 
@@ -262,14 +325,14 @@ public class PlayScene extends AGScene {
     private void createMoney() {
         moneyTime.update();
 
-        for (AGSprite vulture : vultures) {
-            if (vulture.vrPosition.fX <= couro.vrPosition.fX) {
-                alignmentFactor = vulture.vrPosition.fX / couro.vrPosition.fX;
+        for (AGSprite bandit : bandits) {
+            if (bandit.vrPosition.fX <= couro.vrPosition.fX) {
+                alignmentFactor = bandit.vrPosition.fX / couro.vrPosition.fX;
             } else {
-                alignmentFactor = couro.vrPosition.fX / vulture.vrPosition.fX;
+                alignmentFactor = couro.vrPosition.fX / bandit.vrPosition.fX;
             }
 
-            if (alignmentFactor > 0.9) {
+            if (alignmentFactor > 0.8) {
                 // Tenta reciclar um Maço de dinheiro criado anteriormente
                 if (!moneyTime.isTimeEnded()) {
                     return;
@@ -281,43 +344,43 @@ public class PlayScene extends AGScene {
                     if (money.bRecycled) {
                         money.bRecycled = false;
                         money.bVisible = true;
-                        money.vrPosition.fX = vulture.vrPosition.fX;
-                        money.vrPosition.fY = vulture.vrPosition.fY - (vulture.getSpriteHeight() / 2) - (money.getSpriteHeight() / 2);
+                        money.vrPosition.fX = bandit.vrPosition.fX;
+                        money.vrPosition.fY = bandit.vrPosition.fY - (bandit.getSpriteHeight() / 2) - (money.getSpriteHeight() / 2);
                         return;
                     }
                 }
 
                 AGSprite newMoney = createSprite(R.drawable.pack_of_money, 1, 1);
                 newMoney.setScreenPercent(8, 5);
-                newMoney.vrPosition.fX = vulture.vrPosition.fX;
-                newMoney.vrPosition.fY = vulture.vrPosition.fY - (vulture.getSpriteHeight() / 2) - (newMoney.getSpriteHeight() / 2);
+                newMoney.vrPosition.fX = bandit.vrPosition.fX;
+                newMoney.vrPosition.fY = bandit.vrPosition.fY - (bandit.getSpriteHeight() / 2) - (newMoney.getSpriteHeight() / 2);
                 moneyVector.add(newMoney);
             }
         }
     }
 
-    // Metodo que verifica a colisão entre Martelos e Abutres
-    private void verifyHammerVulturesColision() {
+    // Metodo que verifica a colisão entre Martelos e Bandidos
+    private void verifyHammerBanditsColision() {
         for (AGSprite hammer : hammerVector) {
             if (hammer.bRecycled) {
                 continue;
             }
-            for (AGSprite vulture : vultures) {
-                if (hammer.collide(vulture)) {
+            for (AGSprite bandit : bandits) {
+                if (hammer.collide(bandit)) {
                     scoreTime += 50;
-                    createDowncastAnimation(vulture.vrPosition.fX, vulture.vrPosition.fY);
+                    createDowncastAnimation(bandit.vrPosition.fX, bandit.vrPosition.fY);
                     hammer.bRecycled = true;
                     hammer.bVisible = false;
-                    AGSoundManager.vrSoundEffects.play(effectDowncastVulture);
+                    AGSoundManager.vrSoundEffects.play(effectDowncastBandit);
 
-                    if (vulture.vrDirection.fX == 1) {
-                        vulture.vrDirection.fX = -1;
-                        //vulture.iMirror = AGSprite.NONE;
-                        vulture.vrPosition.fX = AGScreenManager.iScreenWidth + vulture.getSpriteWidth() / 2;
+                    if (bandit.vrDirection.fX == 1) {
+                        bandit.vrDirection.fX = -1;
+                        //bandit.iMirror = AGSprite.NONE;
+                        bandit.vrPosition.fX = AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2;
                     } else {
-                        vulture.vrDirection.fX = 1;
-                        //vulture.iMirror = AGSprite.HORIZONTAL;
-                        vulture.vrPosition.fX = -vulture.getSpriteWidth();
+                        bandit.vrDirection.fX = 1;
+                        //bandit.iMirror = AGSprite.HORIZONTAL;
+                        bandit.vrPosition.fX = -bandit.getSpriteWidth();
                     }
                     break;
                 }
@@ -337,7 +400,7 @@ public class PlayScene extends AGScene {
                 //createDowncastAnimation(couro.vrPosition.fX, couro.vrPosition.fY);
                 money.bRecycled = true;
                 money.bVisible = false;
-                //AGSoundManager.vrSoundEffects.play(effectDowncastVulture);
+                //AGSoundManager.vrSoundEffects.play(effectDowncastBandit);
 
                 break;
             }
@@ -352,12 +415,12 @@ public class PlayScene extends AGScene {
             couroTime.restart();
             if (arrow_right.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() <= AGScreenManager.iScreenWidth - couro.getSpriteWidth() / 2) {
-                    AGSoundManager.vrSoundEffects.play(effectMovement);
+                    //AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() + 10);
                 }
             } else if (arrow_left.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() > 0 + couro.getSpriteWidth() / 2) {
-                    AGSoundManager.vrSoundEffects.play(effectMovement);
+                    //AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() - 10);
                 }
             }
@@ -368,21 +431,21 @@ public class PlayScene extends AGScene {
         }
     }
 
-    // Metodo que atualiza a posicao dos Abutres
-    private void updateVultures() {
-        for (AGSprite vulture : vultures) {
-            vulture.vrPosition.fX += 5 * vulture.vrDirection.fX;
-            if (vulture.vrDirection.fX == 1) {
+    // Metodo que atualiza a posicao dos Bandidos
+    private void updateBandits() {
+        for (AGSprite bandit : bandits) {
+            bandit.vrPosition.fX += 5 * bandit.vrDirection.fX;
+            if (bandit.vrDirection.fX == 1) {
                 // Indo para a direita
-                if (vulture.vrPosition.fX > AGScreenManager.iScreenWidth + vulture.getSpriteWidth() / 2) {
-                    vulture.vrDirection.fX = -1;
-                    vulture.iMirror = AGSprite.NONE;
+                if (bandit.vrPosition.fX > AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2) {
+                    bandit.vrDirection.fX = -1;
+                    bandit.iMirror = AGSprite.NONE;
                 }
             } else {
                 // Indo para a esquerda
-                if (vulture.vrPosition.fX <= -vulture.getSpriteWidth() / 2) {
-                    vulture.vrDirection.fX = 1;
-                    vulture.iMirror = AGSprite.HORIZONTAL;
+                if (bandit.vrPosition.fX <= -bandit.getSpriteWidth() / 2) {
+                    bandit.vrDirection.fX = 1;
+                    bandit.iMirror = AGSprite.HORIZONTAL;
                 }
             }
         }
@@ -411,7 +474,7 @@ public class PlayScene extends AGScene {
     }
 
     // metodo para atualizar o movimento dos maços de dinheiro
-    private void updateMoneys() {
+    private void updateMoney() {
         for (AGSprite money : moneyVector) {
             money.vrPosition.fY -= 10;
             money.fAngle -= 15;
@@ -446,7 +509,7 @@ public class PlayScene extends AGScene {
 
     }
 
-    // Metodo utilizado para criar animação ao abater um Abutre
+    // Metodo utilizado para criar animação ao abater um Bandido
     private void createDowncastAnimation(float x, float y) {
         for (AGSprite comndenation : condemnationVector) {
             if (comndenation.bRecycled) {
