@@ -56,6 +56,10 @@ public class MenuScene extends AGScene {
         // Carregando trilha sonora e mantendo-a em repetição
         // AGSoundManager.vrMusic.loadMusic("abutre.mp4", true);
         //AGSoundManager.vrMusic.play();
+
+        // TODO: remover essas 2 linhas de baixo apos concluída a implementação
+        vrGameManager.setCurrentScene(1);
+        return;
     }
 
     @Override

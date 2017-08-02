@@ -17,6 +17,6 @@ public class LoadScenes extends AGActivityGame {
 
         vrManager.addScene(menuScene);
         vrManager.addScene(playScene);
-        //vrManager.addScene(creditsScene);
+        vrManager.addScene(creditsScene);
     }
 }
