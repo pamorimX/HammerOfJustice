@@ -87,7 +87,7 @@ public class PlayScene extends AGScene {
         couro = createSprite(R.drawable.couro, 4, 4);
         couro.setScreenPercent(25, 10);
         couro.addAnimation(1, false, 0);
-        couro.addAnimation(30, false, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+        couro.addAnimation(30, false, 0, 12);
         couro.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         couro.vrPosition.setY(bottomBar.getSpriteHeight() + (couro.getSpriteHeight() / 2));
 
@@ -168,21 +168,21 @@ public class PlayScene extends AGScene {
         bandits[0] = createSprite(R.drawable.molusco, 6, 4);
         bandits[0].setScreenPercent(20, 11);
         bandits[0].vrDirection.fX = 1;
-        bandits[0].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
+        bandits[0].addAnimation(10, true, 0, 20);
         bandits[0].vrPosition.fX = -bandits[0].getSpriteWidth() / 2;
         bandits[0].vrPosition.fY = AGScreenManager.iScreenHeight - bandits[0].getSpriteHeight() / 2 - topBar.getSpriteHeight();
 
         bandits[1] = createSprite(R.drawable.vampirao, 4, 2);
         bandits[1].setScreenPercent(20, 12);
         bandits[1].iMirror = AGSprite.HORIZONTAL;
-        bandits[1].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7);
+        bandits[1].addAnimation(10, true, 0, 7);
         bandits[1].vrDirection.fX = -1;
         bandits[1].vrPosition.fX = AGScreenManager.iScreenWidth + bandits[1].getSpriteWidth() / 2;
         bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight();
 
         bandits[2] = createSprite(R.drawable.toupeirona, 4, 2);
         bandits[2].setScreenPercent(20, 12);
-        bandits[2].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7);
+        bandits[2].addAnimation(10, true, 0, 7);
         bandits[2].vrDirection.fX = 1;
         //bandits[2].vrPosition.fX = AGScreenManager.iScreenWidth + bandits[2].getSpriteWidth() / 2;
         bandits[2].vrPosition.fX = -bandits[2].getSpriteWidth() / 2;
@@ -215,6 +215,8 @@ public class PlayScene extends AGScene {
     @Override
     public void render() {
         super.render();
+
+        // Barra Inferior
         bottomBar.render();
         arrowLeft.render();
         arrowRight.render();
@@ -223,10 +225,12 @@ public class PlayScene extends AGScene {
         hammerSelected.render();
         shoot.render();
 
+        // Menu de pausa
         paused.render();
         //resume.render();
         quit.render();
 
+        // Barra superior
         topBar.render();
         for (AGSprite digito : scoreboard) {
             digito.render();
@@ -267,6 +271,9 @@ public class PlayScene extends AGScene {
         }
 
         if (paused.bVisible) {
+            //for (AGSprite bandit : bandits) {
+                // TODO: Se possível, implementar paralisação de animação dos bandidos
+            //}
             if (quit.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 vrGameManager.setCurrentScene(0);
             }
@@ -374,9 +381,9 @@ public class PlayScene extends AGScene {
     // Metodo que verifica a colisão entre Martelos e Bandidos
     private void verifyHammerBanditsColision() {
         for (AGSprite hammer : hammerVector) {
-            if (hammer.bRecycled) {
+            if (hammer.bRecycled)
                 continue;
-            }
+
             for (AGSprite bandit : bandits) {
                 if (hammer.collide(bandit)) {
                     scoreTime += 50;
@@ -387,11 +394,11 @@ public class PlayScene extends AGScene {
 
                     if (bandit.vrDirection.fX == 1) {
                         bandit.vrDirection.fX = -1;
-                        //bandit.iMirror = AGSprite.NONE;
+                        bandit.iMirror = AGSprite.NONE;
                         bandit.vrPosition.fX = AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2;
                     } else {
                         bandit.vrDirection.fX = 1;
-                        //bandit.iMirror = AGSprite.HORIZONTAL;
+                        bandit.iMirror = AGSprite.HORIZONTAL;
                         bandit.vrPosition.fX = -bandit.getSpriteWidth();
                     }
                     break;
@@ -539,9 +546,9 @@ public class PlayScene extends AGScene {
             }
         }
 
-        AGSprite newCondemnation = createSprite(R.drawable.comndenation, 4, 2);
-        newCondemnation.setScreenPercent(20, 12);
-        newCondemnation.addAnimation(10, false, 0, 7);
+        AGSprite newCondemnation = createSprite(R.drawable.comndenation, 8, 6);
+        newCondemnation.setScreenPercent(21, 12);
+        newCondemnation.addAnimation(30, false, 0, 47);
         newCondemnation.vrPosition.fX = x;
         newCondemnation.vrPosition.fY = y;
         condemnationVector.add(newCondemnation);
