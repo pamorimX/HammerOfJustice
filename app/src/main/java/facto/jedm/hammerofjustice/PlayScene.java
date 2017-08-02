@@ -48,6 +48,8 @@ public class PlayScene extends AGScene {
     AGSprite quit = null;
     AGSprite topBar = null;
     AGSprite bottomBar = null;
+    AGSprite emptyAmmoBar = null;
+    AGSprite fullAmmoBar = null;
 
     float alignmentFactor;
 
@@ -76,6 +78,20 @@ public class PlayScene extends AGScene {
         topBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
         topBar.vrPosition.fY = AGScreenManager.iScreenHeight - topBar.getSpriteHeight() / 2;
         topBar.bAutoRender = false;
+
+        emptyAmmoBar = createSprite(R.drawable.empty_ammo_bar, 1, 1);
+        emptyAmmoBar.setScreenPercent(36, 3);
+        emptyAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth - emptyAmmoBar.getSpriteWidth() / 2;
+        //emptyAmmoBar.vrPosition.fY = AGScreenManager.iScreenHeight - emptyAmmoBar.getSpriteHeight() / 2 - topBar.getSpriteHeight();
+        emptyAmmoBar.vrPosition.fY = topBar.vrPosition.fY;
+        emptyAmmoBar.bAutoRender = false;
+
+        fullAmmoBar = createSprite(R.drawable.full_ammo_bar, 1, 1);
+        fullAmmoBar.setScreenPercent(36, 3);
+        fullAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth - emptyAmmoBar.getSpriteWidth() / 2;
+        //fullAmmoBar.vrPosition.fY = AGScreenManager.iScreenHeight - fullAmmoBar.getSpriteHeight() / 2 - topBar.getSpriteHeight();
+        fullAmmoBar.vrPosition.fY = topBar.vrPosition.fY;
+        fullAmmoBar.bAutoRender = false;
 
         // Barra de controle (inferior)
         bottomBar = createSprite(R.drawable.top_bar, 1, 1);
@@ -170,7 +186,7 @@ public class PlayScene extends AGScene {
         bandits[0].vrDirection.fX = 1;
         bandits[0].addAnimation(10, true, 0, 20);
         bandits[0].vrPosition.fX = -bandits[0].getSpriteWidth() / 2;
-        bandits[0].vrPosition.fY = AGScreenManager.iScreenHeight - bandits[0].getSpriteHeight() / 2 - topBar.getSpriteHeight();
+        bandits[0].vrPosition.fY = AGScreenManager.iScreenHeight - topBar.getSpriteHeight() - bandits[0].getSpriteHeight() / 2;
 
         bandits[1] = createSprite(R.drawable.vampirao, 4, 2);
         bandits[1].setScreenPercent(20, 12);
@@ -184,7 +200,6 @@ public class PlayScene extends AGScene {
         bandits[2].setScreenPercent(20, 12);
         bandits[2].addAnimation(10, true, 0, 7);
         bandits[2].vrDirection.fX = 1;
-        //bandits[2].vrPosition.fX = AGScreenManager.iScreenWidth + bandits[2].getSpriteWidth() / 2;
         bandits[2].vrPosition.fX = -bandits[2].getSpriteWidth() / 2;
         bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight();
 
@@ -195,19 +210,19 @@ public class PlayScene extends AGScene {
         paused.bVisible = false;
         paused.bAutoRender = false;
 
-//        resume = createSprite(R.drawable.resume, 1, 1);
-//        resume.setScreenPercent(53, 7);
-//        resume.vrPosition.fX = AGScreenManager.iScreenWidth /  2;
-//        resume.vrPosition.fY = paused.getSpriteWidth() / 3;
-//        // TODO:    corrigir posicionamento da altura de continuar
-//        resume.bVisible = false;
-//        resume.bAutoRender = false;
+        //TODO:    corrigir posicionamento da altura de continuar
+        //resume = createSprite(R.drawable.resume, 1, 1);
+        //resume.setScreenPercent(53, 7);
+        //resume.vrPosition.fX = AGScreenManager.iScreenWidth /  2;
+        //resume.vrPosition.fY = paused.getSpriteWidth() / 3;
+        //resume.bVisible = false;
+        //resume.bAutoRender = false;
 
+        //TODO:    corrigir posicionamento da altura de continuar
         quit = createSprite(R.drawable.quit, 1, 1);
         quit.setScreenPercent(53, 7);
         quit.vrPosition.fX = AGScreenManager.iScreenWidth /  2;
         quit.vrPosition.fY = paused.vrPosition.fY;
-        // TODO:    corrigir posicionamento da altura de continuar
         quit.bVisible = false;
         quit.bAutoRender = false;
     }
@@ -232,6 +247,8 @@ public class PlayScene extends AGScene {
 
         // Barra superior
         topBar.render();
+        emptyAmmoBar.render();
+        fullAmmoBar.render();
         for (AGSprite digito : scoreboard) {
             digito.render();
         }
@@ -321,13 +338,18 @@ public class PlayScene extends AGScene {
             hammerTime.restart();
 
             for (AGSprite hammer : hammerVector) {
+                fullAmmoBar.vrPosition.fX -= 30;
+
+                if (couro.getCurrentAnimation().isAnimationEnded())
+                    if (couro.getCurrentAnimationIndex() == 0)
+                        couro.setCurrentAnimation(1);
+                    couro.getCurrentAnimation().restart();
+
                 if (hammer.bRecycled) {
                     hammer.bRecycled = false;
                     hammer.bVisible = true;
                     hammer.vrPosition.fX = couro.vrPosition.fX;
                     hammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + hammer.getSpriteHeight() / 2;
-                    //Log.d("Teste", Integer.toString(couro.getCurrentAnimation().getTotalFrames()));
-                    //couro.setCurrentAnimation(1);
                     return;
                 }
             }
