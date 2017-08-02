@@ -15,7 +15,6 @@ public class MenuScene extends AGScene {
     AGSprite playButton = null;
     AGSprite creditsButton = null;
     AGSprite exitButton = null;
-    int codigoEfeito = 0;
 
     public MenuScene(AGGameManager pManager) {
         super(pManager);
@@ -23,10 +22,9 @@ public class MenuScene extends AGScene {
 
     @Override
     public void init() {
-        Log.i("TAG", Integer.toString(AGScreenManager.iScreenWidth));
-        Log.i("TAG", Integer.toString(AGScreenManager.iScreenHeight));
-
-        codigoEfeito = AGSoundManager.vrSoundEffects.loadSoundEffect("abutre.mp4");
+        // Carregando trilha sonora e mantendo-a em repetição
+        //AGSoundManager.vrMusic.loadMusic("abutre.mp4", true);
+        //AGSoundManager.vrMusic.play();
 
         // Carregando plano de fundo
         // setSceneBackgroundColor("#000000");
@@ -52,14 +50,6 @@ public class MenuScene extends AGScene {
         exitButton.setScreenPercent(33, 26);
         exitButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         exitButton.vrPosition.setY(AGScreenManager.iScreenHeight / 4);
-
-        // Carregando trilha sonora e mantendo-a em repetição
-        // AGSoundManager.vrMusic.loadMusic("abutre.mp4", true);
-        //AGSoundManager.vrMusic.play();
-
-        // TODO: remover essas 2 linhas de baixo apos concluída a implementação
-        vrGameManager.setCurrentScene(1);
-        return;
     }
 
     @Override
