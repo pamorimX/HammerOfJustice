@@ -30,21 +30,21 @@ public class PlayScene extends AGScene {
     // Cria a variavel para armazenar o cod efeito som
     //int effectMovement = 0;
     int effectDowncastBandit = 0;
+
     int score = 0;
     int scoreTime = 0;
 
     // Cria sprites de fundo e elementos controláveis
     AGSprite background = null;
     AGSprite couro = null;
-    AGSprite arrow_left = null;
-    AGSprite arrow_right = null;
-    AGSprite little_hammer = null;
-    AGSprite big_hammer = null;
-    AGSprite little_hammer_selected = null;
-    AGSprite big_hammer_selected = null;
+    AGSprite arrowLeft = null;
+    AGSprite arrowRight = null;
+    AGSprite littleHammer = null;
+    AGSprite bigHammer = null;
+    AGSprite hammerSelected = null;
     AGSprite shoot = null;
     AGSprite paused = null;
-    AGSprite resume = null;
+    //AGSprite resume = null;
     AGSprite quit = null;
     AGSprite topBar = null;
     AGSprite bottomBar = null;
@@ -92,41 +92,41 @@ public class PlayScene extends AGScene {
         couro.vrPosition.setY(bottomBar.getSpriteHeight() + (couro.getSpriteHeight() / 2));
 
         // Carrega setas direcionais
-        arrow_left = createSprite(R.drawable.arrow, 1, 1);
-        arrow_left.setScreenPercent(14, 8);
-        arrow_left.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+        arrowLeft = createSprite(R.drawable.arrow, 1, 1);
+        arrowLeft.setScreenPercent(14, 8);
+        arrowLeft.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+        arrowLeft.bAutoRender = false;
 
-        arrow_right = createSprite(R.drawable.arrow, 1, 1);
-        arrow_right.setScreenPercent(14, 8);
-        arrow_right.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
-        arrow_right.fAngle = 180;
+        arrowRight = createSprite(R.drawable.arrow, 1, 1);
+        arrowRight.setScreenPercent(14, 8);
+        arrowRight.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+        arrowRight.fAngle = 180;
+        arrowRight.bAutoRender = false;
 
         // Carrega selecionador de martelos
-        little_hammer = createSprite(R.drawable.little_hammer, 1, 1);
-        little_hammer.setScreenPercent(13, 8);
-        little_hammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+        littleHammer = createSprite(R.drawable.little_hammer, 1, 1);
+        littleHammer.setScreenPercent(13, 8);
+        littleHammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+        littleHammer.bAutoRender = false;
 
-        big_hammer = createSprite(R.drawable.big_hammer, 1, 1);
-        big_hammer.setScreenPercent(13, 8);
-        big_hammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+        bigHammer = createSprite(R.drawable.big_hammer, 1, 1);
+        bigHammer.setScreenPercent(13, 8);
+        bigHammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+        bigHammer.bAutoRender = false;
 
-        little_hammer_selected = createSprite(R.drawable.selected_hammer, 1, 1);
-        little_hammer_selected.setScreenPercent(18, 10);
-        little_hammer_selected.vrPosition.setY(little_hammer.vrPosition.getY());
-        little_hammer_selected.bVisible = true;
-
-        big_hammer_selected = createSprite(R.drawable.selected_hammer, 1, 1);
-        big_hammer_selected.setScreenPercent(18, 10);
-        big_hammer_selected.vrPosition.setY(big_hammer.vrPosition.getY());
-        big_hammer_selected.bVisible = false;
+        hammerSelected = createSprite(R.drawable.selected_hammer, 1, 1);
+        hammerSelected.setScreenPercent(18, 10);
+        hammerSelected.bVisible = true;
+        hammerSelected.bAutoRender = false;
 
         // Carrega lançados de martelos
         shoot = createSprite(R.drawable.shoot, 1, 1);
         shoot.setScreenPercent(13, 8);
         shoot.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
+        shoot.bAutoRender = false;
 
         // Calcula o espaço ocupado por todos os sprites da barra de controle (inferior)
-        float ctrlSpritesWidth = arrow_left.getSpriteWidth() + arrow_right.getSpriteWidth() + little_hammer.getSpriteWidth() + big_hammer.getSpriteWidth() + shoot.getSpriteWidth();
+        float ctrlSpritesWidth = arrowLeft.getSpriteWidth() + arrowRight.getSpriteWidth() + littleHammer.getSpriteWidth() + bigHammer.getSpriteWidth() + shoot.getSpriteWidth();
 
         // Calcula espaço livre TOTAL na barra de controle (inferior)
         float ctrlFreeSpace = 1080 - ctrlSpritesWidth;
@@ -134,14 +134,13 @@ public class PlayScene extends AGScene {
         // Calcula espaço livre entre sprites da barra de controle (inferior)
         float ctrlFillSpace = ctrlFreeSpace / 6;
 
-        arrow_left.vrPosition.setX(ctrlFillSpace + arrow_left.getSpriteWidth() / 2);
-        arrow_right.vrPosition.setX(arrow_left.vrPosition.fX + ctrlFillSpace + arrow_right.getSpriteWidth());
-        little_hammer.vrPosition.setX(arrow_right.vrPosition.fX + ctrlFillSpace + little_hammer.getSpriteWidth());
-        big_hammer.vrPosition.setX(little_hammer.vrPosition.fX + ctrlFillSpace + big_hammer.getSpriteWidth());
-        shoot.vrPosition.setX(big_hammer.vrPosition.fX + ctrlFillSpace + shoot.getSpriteWidth());
+        arrowLeft.vrPosition.setX(ctrlFillSpace + arrowLeft.getSpriteWidth() / 2);
+        arrowRight.vrPosition.setX(arrowLeft.vrPosition.fX + ctrlFillSpace + arrowRight.getSpriteWidth());
+        littleHammer.vrPosition.setX(arrowRight.vrPosition.fX + ctrlFillSpace + littleHammer.getSpriteWidth());
+        bigHammer.vrPosition.setX(littleHammer.vrPosition.fX + ctrlFillSpace + bigHammer.getSpriteWidth());
+        shoot.vrPosition.setX(bigHammer.vrPosition.fX + ctrlFillSpace + shoot.getSpriteWidth());
 
-        little_hammer_selected.vrPosition.setX(little_hammer.vrPosition.getX());
-        big_hammer_selected.vrPosition.setX(big_hammer.vrPosition.getX());
+        hammerSelected.vrPosition = littleHammer.vrPosition;
 
         // Configura os sprites do placar
         for (int pos = 0; pos < scoreboard.length; pos++) {
@@ -166,10 +165,10 @@ public class PlayScene extends AGScene {
 
         // TODO: Corrigir animação michael jackson dos bandidões
         // Carrega os sprites dos bandits
-        bandits[0] = createSprite(R.drawable.molusco, 1, 4);
-        bandits[0].setScreenPercent(20, 12);
+        bandits[0] = createSprite(R.drawable.molusco, 6, 4);
+        bandits[0].setScreenPercent(20, 11);
         bandits[0].vrDirection.fX = 1;
-        bandits[0].addAnimation(10, true, 0, 1, 2);
+        bandits[0].addAnimation(10, true, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
         bandits[0].vrPosition.fX = -bandits[0].getSpriteWidth() / 2;
         bandits[0].vrPosition.fY = AGScreenManager.iScreenHeight - bandits[0].getSpriteHeight() / 2 - topBar.getSpriteHeight();
 
@@ -194,6 +193,7 @@ public class PlayScene extends AGScene {
         paused.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
         paused.vrPosition.fY = AGScreenManager.iScreenHeight / 2;
         paused.bVisible = false;
+        paused.bAutoRender = false;
 
 //        resume = createSprite(R.drawable.resume, 1, 1);
 //        resume.setScreenPercent(53, 7);
@@ -201,6 +201,7 @@ public class PlayScene extends AGScene {
 //        resume.vrPosition.fY = paused.getSpriteWidth() / 3;
 //        // TODO:    corrigir posicionamento da altura de continuar
 //        resume.bVisible = false;
+//        resume.bAutoRender = false;
 
         quit = createSprite(R.drawable.quit, 1, 1);
         quit.setScreenPercent(53, 7);
@@ -208,11 +209,24 @@ public class PlayScene extends AGScene {
         quit.vrPosition.fY = paused.vrPosition.fY;
         // TODO:    corrigir posicionamento da altura de continuar
         quit.bVisible = false;
+        quit.bAutoRender = false;
     }
 
     @Override
     public void render() {
         super.render();
+        bottomBar.render();
+        arrowLeft.render();
+        arrowRight.render();
+        littleHammer.render();
+        bigHammer.render();
+        hammerSelected.render();
+        shoot.render();
+
+        paused.render();
+        //resume.render();
+        quit.render();
+
         topBar.render();
         for (AGSprite digito : scoreboard) {
             digito.render();
@@ -239,11 +253,11 @@ public class PlayScene extends AGScene {
 
         if (!paused.bVisible) {
             selectHammer();
-            stopCouroHammerAnimation();
+            //stopCouroHammerAnimation();
             createHammers();
             createMoney();
             verifyHammerBanditsColision();
-            verifyMoneyCouroColision();
+            //verifyMoneyCouroColision();
             updateCouroMovement();
             updateBandits();
             updateCondemnations();
@@ -262,39 +276,36 @@ public class PlayScene extends AGScene {
     }
 
     private void selectHammer() {
-        if (little_hammer_selected.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            if (little_hammer_selected.bVisible) {
+        if (littleHammer.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            if (littleHammer.vrPosition == hammerSelected.vrPosition) {
                 return;
             }
             else {
-                little_hammer_selected.bVisible = !little_hammer_selected.bVisible;
-                big_hammer_selected.bVisible = !big_hammer_selected.bVisible;
+                hammerSelected.vrPosition = littleHammer.vrPosition;
             }
         }
 
-        else if (big_hammer_selected.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            if (big_hammer_selected.bVisible) {
+        else if (bigHammer.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            if (bigHammer.vrPosition == hammerSelected.vrPosition) {
                 return;
             }
             else {
-                little_hammer_selected.bVisible = !little_hammer_selected.bVisible;
-                big_hammer_selected.bVisible = !big_hammer_selected.bVisible;
+                hammerSelected.vrPosition = bigHammer.vrPosition;
             }
         }
     }
 
-    private void stopCouroHammerAnimation() {
-        if (couro.getCurrentAnimationIndex() == 1 && couro.getCurrentAnimation().isAnimationEnded()) {
-            couro.setCurrentAnimation(0);
-        }
-    }
+//    private void stopCouroHammerAnimation() {
+//        if (couro.getCurrentAnimationIndex() == 1 && couro.getCurrentAnimation().isAnimationEnded()) {
+//            couro.setCurrentAnimation(0);
+//        }
+//    }
 
     // Coloca um Martelo no vetor de martelos
     private void createHammers() {
         hammerTime.update();
 
         // Tenta reciclar um Martelo criado anteriormente
-        //if (AGInputManager.vrTouchEvents.screenClicked()) {
         if (shoot.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
             if (!hammerTime.isTimeEnded()) {
                 return;
@@ -308,16 +319,17 @@ public class PlayScene extends AGScene {
                     hammer.bVisible = true;
                     hammer.vrPosition.fX = couro.vrPosition.fX;
                     hammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + hammer.getSpriteHeight() / 2;
+                    //Log.d("Teste", Integer.toString(couro.getCurrentAnimation().getTotalFrames()));
+                    //couro.setCurrentAnimation(1);
                     return;
                 }
             }
 
-            AGSprite newHammer = createSprite(R.drawable.little_hammer, 1, 1);
+            AGSprite newHammer = createSprite(hammerSelected.vrPosition == littleHammer.vrPosition ? R.drawable.little_hammer : R.drawable.big_hammer, 1, 1);
             newHammer.setScreenPercent(8, 5);
             newHammer.vrPosition.fX = couro.vrPosition.fX;
             newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
             hammerVector.add(newHammer);
-            couro.setCurrentAnimation(1);
         }
     }
 
@@ -413,12 +425,12 @@ public class PlayScene extends AGScene {
         couroTime.update();
         if (couroTime.isTimeEnded()) {
             couroTime.restart();
-            if (arrow_right.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            if (arrowRight.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() <= AGScreenManager.iScreenWidth - couro.getSpriteWidth() / 2) {
                     //AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() + 10);
                 }
-            } else if (arrow_left.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            } else if (arrowLeft.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() > 0 + couro.getSpriteWidth() / 2) {
                     //AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() - 10);
@@ -437,15 +449,15 @@ public class PlayScene extends AGScene {
             bandit.vrPosition.fX += 5 * bandit.vrDirection.fX;
             if (bandit.vrDirection.fX == 1) {
                 // Indo para a direita
-                if (bandit.vrPosition.fX > AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2) {
-                    bandit.vrDirection.fX = -1;
+                if (bandit.vrPosition.fX >= AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2) {
                     bandit.iMirror = AGSprite.NONE;
+                    bandit.vrDirection.fX = -1;
                 }
             } else {
                 // Indo para a esquerda
                 if (bandit.vrPosition.fX <= -bandit.getSpriteWidth() / 2) {
-                    bandit.vrDirection.fX = 1;
                     bandit.iMirror = AGSprite.HORIZONTAL;
+                    bandit.vrDirection.fX = 1;
                 }
             }
         }
@@ -463,10 +475,13 @@ public class PlayScene extends AGScene {
     // metodo para atualizar o movimento dos martelos
     private void updateHammers() {
         for (AGSprite hammer : hammerVector) {
+            if (hammer.bRecycled)
+                continue;
+
             hammer.vrPosition.fY += 10;
             hammer.fAngle += 15;
 
-            if (hammer.vrPosition.fY > AGScreenManager.iScreenHeight + hammer.getSpriteHeight() / 2) {
+            if (hammer.vrPosition.fY > AGScreenManager.iScreenHeight - topBar.getSpriteHeight() + hammer.getSpriteHeight() / 2) {
                 hammer.bRecycled = true;
                 hammer.bVisible = false;
             }
@@ -476,6 +491,9 @@ public class PlayScene extends AGScene {
     // metodo para atualizar o movimento dos maços de dinheiro
     private void updateMoney() {
         for (AGSprite money : moneyVector) {
+            if (money.bRecycled)
+                continue;
+
             money.vrPosition.fY -= 10;
             money.fAngle -= 15;
 

@@ -419,6 +419,30 @@ public class AGSprite
 			vetAnimations.get(iCurrentAnimation).restart();
 		}
 	}
+
+	/*******************************************
+	 * Name: setCurrentAnimation()
+	 * Description: configures the current animation index
+	 * Parameters: int
+	 * Returns: none
+	 *******************************************/
+	public void setCurrentAnimation(int iAnim, boolean restart)
+	{
+		//Test if Sprite has animations to be set
+		if (vetAnimations.size() == 0)
+		{
+			return;
+		}
+
+		//Test the animation index
+		if(iAnim != iCurrentAnimation && iAnim < vetAnimations.size())
+		{
+			iCurrentAnimation = iAnim;
+			if (!restart) {
+				vetAnimations.get(iCurrentAnimation).restart();
+			}
+		}
+	}
 	
 	/*********************************************
 	* Name: restartAnimation()
