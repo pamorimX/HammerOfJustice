@@ -31,7 +31,7 @@ public class PlayScene extends AGScene {
     //int effectMovement = 0;
     int effectDowncastBandit = 0;
 
-    int score = 0;
+    int score = 100;
     int scoreTime = 0;
 
     // Cria sprites de fundo e elementos controláveis
@@ -154,7 +154,7 @@ public class PlayScene extends AGScene {
             }
         }
 
-        // Setando tempo de execucao de movimentos de Couro, Martelo e Maço de dinheiro
+        // Setando tempo de repetição das ações Couro, Martelo e Maço de dinheiro
         couroTime = new AGTimer(25);
         hammerTime = new AGTimer(500);
         moneyTime = new AGTimer(500);
@@ -261,7 +261,7 @@ public class PlayScene extends AGScene {
             createHammers();
             createMoney();
             verifyHammerBanditsColision();
-            //verifyMoneyCouroColision();
+            verifyMoneyCouroColision();
             updateCouroMovement();
             updateBandits();
             updateCondemnations();
@@ -387,7 +387,7 @@ public class PlayScene extends AGScene {
             for (AGSprite bandit : bandits) {
                 if (hammer.collide(bandit)) {
                     scoreTime += 50;
-                    createDowncastAnimation(bandit.vrPosition.fX, bandit.vrPosition.fY);
+                    createExplosionAnimation(bandit.vrPosition.fX, bandit.vrPosition.fY);
                     hammer.bRecycled = true;
                     hammer.bVisible = false;
                     AGSoundManager.vrSoundEffects.play(effectDowncastBandit);
@@ -415,8 +415,8 @@ public class PlayScene extends AGScene {
                 continue;
             }
             if (money.collide(couro)) {
-                scoreTime -= 50;
-                //createDowncastAnimation(couro.vrPosition.fX, couro.vrPosition.fY);
+                scoreTime -= 2;
+                //createExplosionAnimation(couro.vrPosition.fX, couro.vrPosition.fY);
                 money.bRecycled = true;
                 money.bVisible = false;
                 //AGSoundManager.vrSoundEffects.play(effectDowncastBandit);
@@ -511,6 +511,14 @@ public class PlayScene extends AGScene {
         }
     }
 
+    // Verifica se Couro foi derrotado
+    private boolean isCouroDefeated() {
+        if (score == 0)
+            return true;
+        else
+            return false;
+    }
+
     // Metodo criado para atualizar quadros do Placar
     private void updateScoreboard() {
         if (scoreTime > 0) {
@@ -532,10 +540,14 @@ public class PlayScene extends AGScene {
         scoreboard[1].setCurrentAnimation((score % 100000) / 10000);
         scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
 
+        if (isCouroDefeated()) {
+            // TODO: implementar imagem gameover sobrepondo o jogo (jogar novamente ou sair)
+            Log.d("TAG", "Siiiiimmmmm");
+        }
     }
 
     // Metodo utilizado para criar animação ao abater um Bandido
-    private void createDowncastAnimation(float x, float y) {
+    private void createExplosionAnimation(float x, float y) {
         for (AGSprite comndenation : condemnationVector) {
             if (comndenation.bRecycled) {
                 comndenation.bRecycled = false;
