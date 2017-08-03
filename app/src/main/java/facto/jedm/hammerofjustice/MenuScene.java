@@ -9,10 +9,10 @@ import android.cg.com.megavirada.AndGraph.AGSprite;
 public class MenuScene extends AGScene {
     // TODO: 05/07/17 Providenciar background da tela de menu
 
-    AGSprite background = null;
-    AGSprite playButton = null;
-    AGSprite creditsButton = null;
-    AGSprite quitButton = null;
+    private AGSprite background = null;
+    private AGSprite playButton = null;
+    private AGSprite creditsButton = null;
+    private AGSprite quitButton = null;
 
     public MenuScene(AGGameManager pManager) {
         super(pManager);

@@ -27,16 +27,20 @@ public class PlayScene extends AGScene {
     AGTimer moneyTime = null;
     AGTimer ammoTime = null;
 
-    // Cria a variavel para armazenar o cod efeito som
+    // Efeitos sonoros de eventos
     //int effectMovement = 0;
     int effectDowncastBandit = 0;
 
+    // Controle de saldo
     int score = 100;
     int positiveScoreTime = 0;
     int negativeScoreTime = 0;
+
+    // Controle de munição gasta e recuperada
     int ammoSpent = 0;
     int ammoRecovered = 0;
 
+    // Controles de paralisação
     boolean pause;
     boolean gameOver;
 
@@ -80,26 +84,26 @@ public class PlayScene extends AGScene {
         background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
         topBar = createSprite(R.drawable.bar, 1, 1);
-        topBar.setScreenPercent(100, 10);
+        topBar.setScreenPercent(100, 8);
         topBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
         topBar.vrPosition.fY = AGScreenManager.iScreenHeight - topBar.getSpriteHeight() / 2;
         topBar.bAutoRender = false;
 
         emptyAmmoBar = createSprite(R.drawable.empty_ammo_bar, 1, 1);
-        emptyAmmoBar.setScreenPercent(42, 3);
-        emptyAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth - emptyAmmoBar.getSpriteWidth() / 2;
-        emptyAmmoBar.vrPosition.fY = topBar.vrPosition.fY;
+        emptyAmmoBar.setScreenPercent(100, 2);
+        emptyAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
+        emptyAmmoBar.vrPosition.fY = topBar.vrPosition.fY - topBar.getSpriteHeight() / 2 - emptyAmmoBar.getSpriteHeight() / 2;
         emptyAmmoBar.bAutoRender = false;
 
         fullAmmoBar = createSprite(R.drawable.full_ammo_bar, 1, 1);
-        fullAmmoBar.setScreenPercent(42, 3);
-        fullAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth - emptyAmmoBar.getSpriteWidth() / 2;
-        fullAmmoBar.vrPosition.fY = topBar.vrPosition.fY;
+        fullAmmoBar.setScreenPercent(100, 2);
+        fullAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
+        fullAmmoBar.vrPosition.fY = topBar.vrPosition.fY - topBar.getSpriteHeight() / 2 - fullAmmoBar.getSpriteHeight() / 2;
         fullAmmoBar.bAutoRender = false;
 
         // Barra de controle (inferior)
         bottomBar = createSprite(R.drawable.bar, 1, 1);
-        bottomBar.setScreenPercent(100, 10);
+        bottomBar.setScreenPercent(100, 8);
         bottomBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
         bottomBar.vrPosition.fY = bottomBar.getSpriteHeight() / 2;
 
@@ -135,7 +139,7 @@ public class PlayScene extends AGScene {
         bigHammer.bAutoRender = false;
 
         hammerSelected = createSprite(R.drawable.selected_hammer, 1, 1);
-        hammerSelected.setScreenPercent(18, 10);
+        hammerSelected.setScreenPercent(16, 9);
         hammerSelected.bVisible = true;
         hammerSelected.bAutoRender = false;
 
@@ -146,13 +150,13 @@ public class PlayScene extends AGScene {
         shoot.bAutoRender = false;
 
         // Calcula o espaço ocupado por todos os sprites da barra de controle (inferior)
-        float ctrlSpritesWidth = arrowLeft.getSpriteWidth() + arrowRight.getSpriteWidth() + littleHammer.getSpriteWidth() + bigHammer.getSpriteWidth() + shoot.getSpriteWidth();
+        float totalBottomBarSpritesWidth = arrowLeft.getSpriteWidth() + arrowRight.getSpriteWidth() + littleHammer.getSpriteWidth() + bigHammer.getSpriteWidth() + shoot.getSpriteWidth();
 
         // Calcula espaço livre TOTAL na barra de controle (inferior)
-        float ctrlFreeSpace = 1080 - ctrlSpritesWidth;
+        float freeBottomBarSpace = AGScreenManager.iScreenWidth - totalBottomBarSpritesWidth;
 
         // Calcula espaço livre entre sprites da barra de controle (inferior)
-        float ctrlFillSpace = ctrlFreeSpace / 6;
+        float ctrlFillSpace = freeBottomBarSpace / 6;
 
         arrowLeft.vrPosition.setX(ctrlFillSpace + arrowLeft.getSpriteWidth() / 2);
         arrowRight.vrPosition.setX(arrowLeft.vrPosition.fX + ctrlFillSpace + arrowRight.getSpriteWidth());
@@ -162,10 +166,11 @@ public class PlayScene extends AGScene {
 
         hammerSelected.vrPosition = littleHammer.vrPosition;
 
-        // Configura os sprites do placar
+        // Posiciona cada dígito à direita do anterior
+        // Cria as 10 animações pra cada dígito do placar
         for (int pos = 0; pos < scoreboard.length; pos++) {
-            scoreboard[pos] = createSprite(R.drawable.font, 4, 4);
-            scoreboard[pos].setScreenPercent(8, 8);
+            scoreboard[pos] = createSprite(R.drawable.numbers, 10, 1);
+            scoreboard[pos].setScreenPercent(9, 6);
             scoreboard[pos].vrPosition.fY = topBar.vrPosition.fY;
             scoreboard[pos].vrPosition.fX = 20 + (pos + 1) * scoreboard[pos].getSpriteWidth();
             scoreboard[pos].bAutoRender = false;
@@ -193,7 +198,7 @@ public class PlayScene extends AGScene {
         bandits[0].vrDirection.fX = 1;
         bandits[0].addAnimation(10, true, 0, 20);
         bandits[0].vrPosition.fX = -bandits[0].getSpriteWidth() / 2;
-        bandits[0].vrPosition.fY = AGScreenManager.iScreenHeight - topBar.getSpriteHeight() - bandits[0].getSpriteHeight() / 2;
+        bandits[0].vrPosition.fY = AGScreenManager.iScreenHeight - topBar.getSpriteHeight() - emptyAmmoBar.getSpriteHeight() - bandits[0].getSpriteHeight() / 2;
 
         bandits[1] = createSprite(R.drawable.vampirao, 4, 2);
         bandits[1].setScreenPercent(20, 12);
@@ -286,12 +291,10 @@ public class PlayScene extends AGScene {
     }
 
     @Override
-    public void restart() {
-    }
+    public void restart() {}
 
     @Override
-    public void stop() {
-    }
+    public void stop() {}
 
     @Override
     public void loop() {
@@ -342,6 +345,7 @@ public class PlayScene extends AGScene {
 
             if (goHomeMenu.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 vrGameManager.setCurrentScene(0);
+                vrGameManager.releaseScenes();
                 return;
             }
         }
@@ -367,7 +371,7 @@ public class PlayScene extends AGScene {
         gameOverMenu.bVisible = !gameOverMenu.bVisible;
         restartGame.bVisible = !restartGame.bVisible;
         goHomeMenu.bVisible = !goHomeMenu.bVisible;
-        return;
+        //return;
     }
 
     // Seleciona o tipo de martelo a ser disparado
@@ -551,16 +555,14 @@ public class PlayScene extends AGScene {
             couroTime.restart();
             if (arrowRight.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() <= AGScreenManager.iScreenWidth - couro.getSpriteWidth() / 2) {
-                    //AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() + 10);
                 }
             } else if (arrowLeft.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 if (couro.vrPosition.getX() > 0 + couro.getSpriteWidth() / 2) {
-                    //AGSoundManager.vrSoundEffects.play(effectMovement);
                     couro.vrPosition.setX(couro.vrPosition.getX() - 10);
                 }
             }
-            if (!AGInputManager.vrTouchEvents.screenDragged()) {
+            if (!AGInputManager.vrTouchEvents.screenDragged() && !AGInputManager.vrTouchEvents.screenDown()) {
                 AGInputManager.vrTouchEvents.fPosX = 0;
                 AGInputManager.vrTouchEvents.fPosY = 0;
             }
@@ -647,18 +649,18 @@ public class PlayScene extends AGScene {
             score--;
         }
 
-//        if (positiveScoreTime == 0 && negativeScoreTime == 0) {
-//            for (AGSprite digito : scoreboard) {
-//                digito.bVisible = true;
-//            }
-//        }
-//
-//        scoreboard[5].setCurrentAnimation(score % 10);
-//        scoreboard[4].setCurrentAnimation((score % 100) / 10);
-//        scoreboard[3].setCurrentAnimation((score % 1000) / 100);
-//        scoreboard[2].setCurrentAnimation((score % 10000) / 1000);
-//        scoreboard[1].setCurrentAnimation((score % 100000) / 10000);
-//        scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
+        if (positiveScoreTime == 0 && negativeScoreTime == 0) {
+            for (AGSprite digito : scoreboard) {
+                digito.bVisible = true;
+            }
+        }
+
+        scoreboard[5].setCurrentAnimation(score % 10);
+        scoreboard[4].setCurrentAnimation((score % 100) / 10);
+        scoreboard[3].setCurrentAnimation((score % 1000) / 100);
+        scoreboard[2].setCurrentAnimation((score % 10000) / 1000);
+        scoreboard[1].setCurrentAnimation((score % 100000) / 10000);
+        scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
 
         if (isCouroDefeated()) {
             showGameOverMenu();
