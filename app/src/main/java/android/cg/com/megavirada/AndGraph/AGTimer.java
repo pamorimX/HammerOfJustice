@@ -64,8 +64,8 @@ public class AGTimer
 	}
 	
 	/*******************************************
-	* Name: restart()
-	* Description: restart timer with previous interval
+	* Name: restart_game()
+	* Description: restart_game timer with previous interval
 	* Parameters: none
 	* Returns: none
 	******************************************/
@@ -75,8 +75,8 @@ public class AGTimer
 	}
 	
 	/*******************************************
-	* Name: restart()
-	* Description: restart timer with a new interval
+	* Name: restart_game()
+	* Description: restart_game timer with a new interval
 	* Parameters: int
 	* Returns: none
 	******************************************/

@@ -87,8 +87,8 @@ public class AGAnimation
 	}
 	
 	/*******************************************
-	* Name: restart()
-	* Description: restart animation
+	* Name: restart_game()
+	* Description: restart_game animation
 	* Parameters: none
 	* Returns: none
 	******************************************/

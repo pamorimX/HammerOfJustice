@@ -55,7 +55,7 @@ public class AGActivityGame extends Activity
 	
 	/*******************************************
 	* Name: onResume()
-	* Description: method called after resume application
+	* Description: method called after resume_game application
 	* Parameters: none
 	* Returns: none
 	******************************************/

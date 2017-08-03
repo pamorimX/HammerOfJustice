@@ -4,9 +4,7 @@ import android.cg.com.megavirada.AndGraph.AGGameManager;
 import android.cg.com.megavirada.AndGraph.AGInputManager;
 import android.cg.com.megavirada.AndGraph.AGScene;
 import android.cg.com.megavirada.AndGraph.AGScreenManager;
-import android.cg.com.megavirada.AndGraph.AGSoundManager;
 import android.cg.com.megavirada.AndGraph.AGSprite;
-import android.util.Log;
 
 public class MenuScene extends AGScene {
     // TODO: 05/07/17 Providenciar background da tela de menu
@@ -14,7 +12,7 @@ public class MenuScene extends AGScene {
     AGSprite background = null;
     AGSprite playButton = null;
     AGSprite creditsButton = null;
-    AGSprite exitButton = null;
+    AGSprite quitButton = null;
 
     public MenuScene(AGGameManager pManager) {
         super(pManager);
@@ -34,33 +32,29 @@ public class MenuScene extends AGScene {
         background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
         // Criando e definindo botão jogar
-        playButton = this.createSprite(R.drawable.play, 1, 1);
-        playButton.setScreenPercent(33, 11);
+        playButton = this.createSprite(R.drawable.play_menu, 1, 1);
+        playButton.setScreenPercent(64, 10);
         playButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         playButton.vrPosition.setY(AGScreenManager.iScreenHeight / ((float) 4 / 3));
 
         // Criando e definindo botão créditos
-        creditsButton = this.createSprite(R.drawable.credits, 1, 1);
-        creditsButton.setScreenPercent(37, 10);
+        creditsButton = this.createSprite(R.drawable.credits_menu, 1, 1);
+        creditsButton.setScreenPercent(64, 10);
         creditsButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         creditsButton.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
-        // Criando e definindo botão exit
-        exitButton = this.createSprite(R.drawable.exit, 1, 1);
-        exitButton.setScreenPercent(33, 26);
-        exitButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        exitButton.vrPosition.setY(AGScreenManager.iScreenHeight / 4);
+        // Criando e definindo botão quit_menu
+        quitButton = this.createSprite(R.drawable.quit_menu, 1, 1);
+        quitButton.setScreenPercent(64, 10);
+        quitButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
+        quitButton.vrPosition.setY(AGScreenManager.iScreenHeight / 4);
     }
 
     @Override
-    public void restart() {
-
-    }
+    public void restart() {}
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public void loop() {
@@ -74,8 +68,8 @@ public class MenuScene extends AGScene {
             return;
         }
 
-        if (exitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            //vrGameManager.vrActivity.finish();
+        if (quitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            vrGameManager.vrActivity.finish();
         }
     }
 }

@@ -147,7 +147,7 @@ public class AGAccelerometer implements SensorEventListener
 	
 	/*******************************************
 	* Name: onResume()
-	* Description: used to resume Accel configs
+	* Description: used to resume_game Accel configs
 	* Parameters: none
 	* Returns: none
 	******************************************/

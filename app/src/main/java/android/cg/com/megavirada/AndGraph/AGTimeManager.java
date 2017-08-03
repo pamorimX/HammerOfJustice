@@ -40,8 +40,8 @@ public class AGTimeManager
 	}
 	
 	/*******************************************
-	* Name: restart()
-	* Description: restart the last frame time
+	* Name: restart_game()
+	* Description: restart_game the last frame time
 	* Parameters: none
 	* Returns: none
 	******************************************/

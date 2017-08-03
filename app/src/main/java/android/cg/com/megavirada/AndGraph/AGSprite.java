@@ -446,7 +446,7 @@ public class AGSprite
 	
 	/*********************************************
 	* Name: restartAnimation()
-	* Description: restart current animation
+	* Description: restart_game current animation
 	* Parameters: none
 	* Returns: none
 	******************************************/

@@ -216,7 +216,7 @@ public class AGGameManager implements Renderer
 	
 	/*******************************************
 	* Name: onResume()
-	* Description:  used to restart application
+	* Description:  used to restart_game application
 	* Parameters: none
 	* Returns: none
 	******************************************/

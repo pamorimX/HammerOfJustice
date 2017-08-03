@@ -7,7 +7,6 @@ import android.cg.com.megavirada.AndGraph.AGScreenManager;
 import android.cg.com.megavirada.AndGraph.AGSoundManager;
 import android.cg.com.megavirada.AndGraph.AGSprite;
 import android.cg.com.megavirada.AndGraph.AGTimer;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -80,26 +79,26 @@ public class PlayScene extends AGScene {
         background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
-        topBar = createSprite(R.drawable.top_bar, 1, 1);
+        topBar = createSprite(R.drawable.bar, 1, 1);
         topBar.setScreenPercent(100, 10);
         topBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
         topBar.vrPosition.fY = AGScreenManager.iScreenHeight - topBar.getSpriteHeight() / 2;
         topBar.bAutoRender = false;
 
         emptyAmmoBar = createSprite(R.drawable.empty_ammo_bar, 1, 1);
-        emptyAmmoBar.setScreenPercent(36, 4);
+        emptyAmmoBar.setScreenPercent(42, 3);
         emptyAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth - emptyAmmoBar.getSpriteWidth() / 2;
         emptyAmmoBar.vrPosition.fY = topBar.vrPosition.fY;
         emptyAmmoBar.bAutoRender = false;
 
         fullAmmoBar = createSprite(R.drawable.full_ammo_bar, 1, 1);
-        fullAmmoBar.setScreenPercent(36, 2);
+        fullAmmoBar.setScreenPercent(42, 3);
         fullAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth - emptyAmmoBar.getSpriteWidth() / 2;
         fullAmmoBar.vrPosition.fY = topBar.vrPosition.fY;
         fullAmmoBar.bAutoRender = false;
 
         // Barra de controle (inferior)
-        bottomBar = createSprite(R.drawable.top_bar, 1, 1);
+        bottomBar = createSprite(R.drawable.bar, 1, 1);
         bottomBar.setScreenPercent(100, 10);
         bottomBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
         bottomBar.vrPosition.fY = bottomBar.getSpriteHeight() / 2;
@@ -218,14 +217,14 @@ public class PlayScene extends AGScene {
         pauseMenu.bVisible = false;
         pauseMenu.bAutoRender = false;
 
-        resume = createSprite(R.drawable.resume, 1, 1);
+        resume = createSprite(R.drawable.resume_game, 1, 1);
         resume.setScreenPercent(76, 9);
         resume.vrPosition.fX = pauseMenu.vrPosition.fX;
         resume.vrPosition.fY = pauseMenu.vrPosition.fY;
         resume.bVisible = false;
         resume.bAutoRender = false;
 
-        quit = createSprite(R.drawable.quit, 1, 1);
+        quit = createSprite(R.drawable.quit_game, 1, 1);
         quit.setScreenPercent(76, 9);
         quit.vrPosition.fX = pauseMenu.vrPosition.fX;
         quit.vrPosition.fY = resume.vrPosition.fY - resume.getSpriteHeight() - quit.getSpriteHeight() / 2;
@@ -239,7 +238,7 @@ public class PlayScene extends AGScene {
         gameOverMenu.bVisible = false;
         gameOverMenu.bAutoRender = false;
 
-        restartGame = createSprite(R.drawable.restart, 1, 1);
+        restartGame = createSprite(R.drawable.restart_game, 1, 1);
         restartGame.setScreenPercent(76, 9);
         restartGame.vrPosition.fX = gameOverMenu.vrPosition.fX;
         restartGame.vrPosition.fY = gameOverMenu.vrPosition.fY;
@@ -305,7 +304,7 @@ public class PlayScene extends AGScene {
             selectHammer();
             recoverAmmo();
             updateAmmoBar();
-            createHammers();
+            createHammer();
             createMoney();
             verifyHammerBanditsCollision();
             verifyMoneyCouroCollision();
@@ -337,8 +336,6 @@ public class PlayScene extends AGScene {
         // Game Over
         else {
             if (restartGame.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-                Log.d("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getX()));
-                Log.d("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getY()));
                 vrGameManager.setCurrentScene(1);
                 return;
             }
@@ -350,11 +347,13 @@ public class PlayScene extends AGScene {
         }
     }
 
+    // Seta a flag de pausa e chama o menu de pausa
     public void pauseEvent() {
         pause = !pause;
         switchPauseMenu();
     }
 
+    // Alterna o menu de pausa de acordo com o estado de execução do jogo
     private void switchPauseMenu() {
         pauseMenu.bVisible = !pauseMenu.bVisible;
         resume.bVisible = !resume.bVisible;
@@ -362,13 +361,16 @@ public class PlayScene extends AGScene {
         return;
     }
 
+    // Exibe o menu de game over
     private void showGameOverMenu() {
+        gameOver = !gameOver;
         gameOverMenu.bVisible = !gameOverMenu.bVisible;
         restartGame.bVisible = !restartGame.bVisible;
         goHomeMenu.bVisible = !goHomeMenu.bVisible;
         return;
     }
 
+    // Seleciona o tipo de martelo a ser disparado
     private void selectHammer() {
         if (littleHammer.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
             if (littleHammer.vrPosition == hammerSelected.vrPosition) {
@@ -385,6 +387,7 @@ public class PlayScene extends AGScene {
         }
     }
 
+    // Recupera munição a cada x milisegundos (ammoTime)
     private void recoverAmmo() {
         ammoTime.update();
 
@@ -412,7 +415,7 @@ public class PlayScene extends AGScene {
     }
 
     // Coloca um Martelo no vetor de martelos
-    private void createHammers() {
+    private void createHammer() {
         hammerTime.update();
 
         // Tenta reciclar um Martelo criado anteriormente
@@ -644,23 +647,21 @@ public class PlayScene extends AGScene {
             score--;
         }
 
-        if (positiveScoreTime == 0 && negativeScoreTime == 0) {
-            for (AGSprite digito : scoreboard) {
-                digito.bVisible = true;
-            }
-        }
-
-        scoreboard[5].setCurrentAnimation(score % 10);
-        scoreboard[4].setCurrentAnimation((score % 100) / 10);
-        scoreboard[3].setCurrentAnimation((score % 1000) / 100);
-        scoreboard[2].setCurrentAnimation((score % 10000) / 1000);
-        scoreboard[1].setCurrentAnimation((score % 100000) / 10000);
-        scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
+//        if (positiveScoreTime == 0 && negativeScoreTime == 0) {
+//            for (AGSprite digito : scoreboard) {
+//                digito.bVisible = true;
+//            }
+//        }
+//
+//        scoreboard[5].setCurrentAnimation(score % 10);
+//        scoreboard[4].setCurrentAnimation((score % 100) / 10);
+//        scoreboard[3].setCurrentAnimation((score % 1000) / 100);
+//        scoreboard[2].setCurrentAnimation((score % 10000) / 1000);
+//        scoreboard[1].setCurrentAnimation((score % 100000) / 10000);
+//        scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
 
         if (isCouroDefeated()) {
-            gameOver = true;
             showGameOverMenu();
-            return;
         }
     }
 
