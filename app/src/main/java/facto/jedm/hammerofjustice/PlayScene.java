@@ -15,7 +15,8 @@ public class PlayScene extends AGScene {
     AGSprite[] scoreboard = new AGSprite[6];
 
     // Cria o vetor de tiros
-    ArrayList<AGSprite> hammerVector = null;
+    ArrayList<AGSprite> littleHammerVector = null;
+    ArrayList<AGSprite> bigHammerVector = null;
     ArrayList<AGSprite> moneyVector = null;
     ArrayList<AGSprite> condemnationVector = null;
 
@@ -32,7 +33,7 @@ public class PlayScene extends AGScene {
     int effectDowncastBandit = 0;
 
     // Controle de saldo
-    int score = 100;
+    int score = 10;
     int positiveScoreTime = 0;
     int negativeScoreTime = 0;
 
@@ -73,7 +74,8 @@ public class PlayScene extends AGScene {
     @Override
     public void init() {
         // Vetores de martelo, dinheiro e condenações
-        hammerVector = new ArrayList<AGSprite>();
+        littleHammerVector = new ArrayList<AGSprite>();
+        bigHammerVector = new ArrayList<AGSprite>();
         moneyVector = new ArrayList<AGSprite>();
         condemnationVector = new ArrayList<AGSprite>();
 
@@ -298,16 +300,41 @@ public class PlayScene extends AGScene {
 
     @Override
     public void loop() {
-        if (AGInputManager.vrTouchEvents.backButtonClicked()) {
+        if (AGInputManager.vrTouchEvents.backButtonClicked() && !gameOver) {
             pauseEvent();
         }
 
+        // Jogo pausado
+        if (pause) {
+            if (resume.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                pauseEvent();
+            }
+
+            else if (quit.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                vrGameManager.setCurrentScene(0);
+            }
+        }
+
+        // Game Over
+        else if (gameOver) {
+            if (restartGame.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+//                showGameOverMenu();
+                vrGameManager.setCurrentScene(0);
+                vrGameManager.setCurrentScene(1);
+            }
+
+            else if (goHomeMenu.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                vrGameManager.setCurrentScene(0);
+            }
+        }
+
         // Jogo rodando
-        if (!pause && !gameOver) {
+        else if (!pause && !gameOver) {
             selectHammer();
             recoverAmmo();
             updateAmmoBar();
-            createHammer();
+            createLittleHammer();
+            createBigHammer();
             createMoney();
             verifyHammerBanditsCollision();
             verifyMoneyCouroCollision();
@@ -317,37 +344,6 @@ public class PlayScene extends AGScene {
             updateHammers();
             updateMoney();
             updateScoreboard();
-        }
-
-        // Jogo pausado
-        else if (pause) {
-            //for (AGSprite bandit : bandits) {
-            //    TODO: Se possível, implementar paralisação de animação dos bandidos
-            //    bandit.getCurrentAnimationFrame();
-            //}
-
-            if (resume.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-                pauseEvent();
-            }
-
-            if (quit.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-                vrGameManager.setCurrentScene(0);
-                return;
-            }
-        }
-
-        // Game Over
-        else {
-            if (restartGame.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-                vrGameManager.setCurrentScene(1);
-                return;
-            }
-
-            if (goHomeMenu.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-                vrGameManager.setCurrentScene(0);
-                vrGameManager.releaseScenes();
-                return;
-            }
         }
     }
 
@@ -362,7 +358,6 @@ public class PlayScene extends AGScene {
         pauseMenu.bVisible = !pauseMenu.bVisible;
         resume.bVisible = !resume.bVisible;
         quit.bVisible = !quit.bVisible;
-        return;
     }
 
     // Exibe o menu de game over
@@ -371,7 +366,6 @@ public class PlayScene extends AGScene {
         gameOverMenu.bVisible = !gameOverMenu.bVisible;
         restartGame.bVisible = !restartGame.bVisible;
         goHomeMenu.bVisible = !goHomeMenu.bVisible;
-        //return;
     }
 
     // Seleciona o tipo de martelo a ser disparado
@@ -418,16 +412,18 @@ public class PlayScene extends AGScene {
         }
     }
 
-    // Coloca um Martelo no vetor de martelos
-    private void createHammer() {
+    // Coloca um Martelinho no vetor de martelos
+    private void createLittleHammer() {
         hammerTime.update();
 
         // Tenta reciclar um Martelo criado anteriormente
         if (shoot.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            // Impede que seja criado outro martelo antes do intervalo (500ms) entre um e outro
             if (!hammerTime.isTimeEnded()) {
                 return;
             }
 
+            // Impede de atirar quando esvaziar a ammoBar
             if (!fullAmmoBar.collide(emptyAmmoBar)) {
                 return;
             }
@@ -436,13 +432,12 @@ public class PlayScene extends AGScene {
 
             ammoSpent -= 100;
 
-            // Anima o lançamento do martelo
-            if (couro.getCurrentAnimation().isAnimationEnded())
-                if (couro.getCurrentAnimationIndex() == 0)
-                    couro.setCurrentAnimation(1);
+            // Anima o lançamento do martelinho
+            if (couro.getCurrentAnimationIndex() == 0)
+                couro.setCurrentAnimation(1);
             couro.getCurrentAnimation().restart();
 
-            for (AGSprite hammer : hammerVector) {
+            for (AGSprite hammer : littleHammerVector) {
 
                 if (hammer.bRecycled) {
                     hammer.bRecycled = false;
@@ -453,11 +448,55 @@ public class PlayScene extends AGScene {
                 }
             }
 
-            AGSprite newHammer = createSprite(hammerSelected.vrPosition == littleHammer.vrPosition ? R.drawable.little_hammer : R.drawable.big_hammer, 1, 1);
+            AGSprite newHammer = createSprite(R.drawable.little_hammer, 1, 1);
             newHammer.setScreenPercent(8, 5);
             newHammer.vrPosition.fX = couro.vrPosition.fX;
             newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
-            hammerVector.add(newHammer);
+            littleHammerVector.add(newHammer);
+        }
+    }
+
+    // Coloca um Martelo no vetor de martelos
+    private void createBigHammer() {
+        hammerTime.update();
+
+        // Tenta reciclar um Martelo criado anteriormente
+        if (shoot.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            // Impede que seja criado outro martelo antes do intervalo (500ms) entre um e outro
+            if (!hammerTime.isTimeEnded()) {
+                return;
+            }
+
+            // Impede de atirar quando esvaziar a ammoBar
+            if (!fullAmmoBar.collide(emptyAmmoBar)) {
+                return;
+            }
+
+            hammerTime.restart();
+
+            ammoSpent -= 100;
+
+            // Anima o lançamento do martelão
+            if (couro.getCurrentAnimationIndex() == 0)
+                couro.setCurrentAnimation(1);
+            couro.getCurrentAnimation().restart();
+
+            for (AGSprite hammer : bigHammerVector) {
+
+                if (hammer.bRecycled) {
+                    hammer.bRecycled = false;
+                    hammer.bVisible = true;
+                    hammer.vrPosition.fX = couro.vrPosition.fX;
+                    hammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + hammer.getSpriteHeight() / 2;
+                    return;
+                }
+            }
+
+            AGSprite newHammer = createSprite(R.drawable.big_hammer, 1, 1);
+            newHammer.setScreenPercent(8, 5);
+            newHammer.vrPosition.fX = couro.vrPosition.fX;
+            newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
+            bigHammerVector.add(newHammer);
         }
     }
 
@@ -501,31 +540,40 @@ public class PlayScene extends AGScene {
 
     // Metodo que verifica a colisão entre Martelos e Bandidos
     private void verifyHammerBanditsCollision() {
-        for (AGSprite hammer : hammerVector) {
+        // Recicla martelinho
+        for (AGSprite hammer : littleHammerVector) {
             if (hammer.bRecycled)
                 continue;
+            recycleHammerAndBandit(hammer);
+        }
+        // Recicla martelão
+        for (AGSprite hammer : bigHammerVector) {
+            if (hammer.bRecycled)
+                continue;
+            recycleHammerAndBandit(hammer);
+        }
+    }
 
-            for (AGSprite bandit : bandits) {
-                if (hammer.collide(bandit)) {
-                    positiveScoreTime += 50;
-                    createExplosionAnimation(bandit.vrPosition.fX, bandit.vrPosition.fY);
-                    hammer.bRecycled = true;
-                    hammer.bVisible = false;
-                    AGSoundManager.vrSoundEffects.play(effectDowncastBandit);
+    private void recycleHammerAndBandit(AGSprite hammer) {
+        for (AGSprite bandit : bandits) {
+            if (hammer.collide(bandit)) {
+                positiveScoreTime += 50;
+                createExplosionAnimation(bandit.vrPosition.fX, bandit.vrPosition.fY);
+                hammer.bRecycled = true;
+                hammer.bVisible = false;
+                AGSoundManager.vrSoundEffects.play(effectDowncastBandit);
 
-                    if (bandit.vrDirection.fX == 1) {
-                        bandit.vrDirection.fX = -1;
-                        bandit.iMirror = AGSprite.HORIZONTAL;
-                        bandit.vrPosition.fX = AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2;
-                    } else {
-                        bandit.vrDirection.fX = 1;
-                        bandit.iMirror = AGSprite.NONE;
-                        bandit.vrPosition.fX = -bandit.getSpriteWidth();
-                    }
-                    break;
+                if (bandit.vrDirection.fX == 1) {
+                    bandit.vrDirection.fX = -1;
+                    bandit.iMirror = AGSprite.HORIZONTAL;
+                    bandit.vrPosition.fX = AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2;
+                } else {
+                    bandit.vrDirection.fX = 1;
+                    bandit.iMirror = AGSprite.NONE;
+                    bandit.vrPosition.fX = -bandit.getSpriteWidth();
                 }
+                break;
             }
-
         }
     }
 
@@ -600,17 +648,26 @@ public class PlayScene extends AGScene {
 
     // metodo para atualizar o movimento dos martelos
     private void updateHammers() {
-        for (AGSprite hammer : hammerVector) {
+        for (AGSprite hammer : littleHammerVector) {
             if (hammer.bRecycled)
                 continue;
+            teste(hammer);
+        }
 
-            hammer.vrPosition.fY += 10;
-            hammer.fAngle += 15;
+        for (AGSprite hammer : bigHammerVector) {
+            if (hammer.bRecycled)
+                continue;
+            teste(hammer);
+        }
+    }
 
-            if (hammer.vrPosition.fY > AGScreenManager.iScreenHeight - topBar.getSpriteHeight() + hammer.getSpriteHeight() / 2) {
-                hammer.bRecycled = true;
-                hammer.bVisible = false;
-            }
+    private void teste(AGSprite hammer) {
+        hammer.vrPosition.fY += 10;
+        hammer.fAngle += 15;
+
+        if (hammer.vrPosition.fY > AGScreenManager.iScreenHeight - topBar.getSpriteHeight() + hammer.getSpriteHeight() / 2) {
+            hammer.bRecycled = true;
+            hammer.bVisible = false;
         }
     }
 
