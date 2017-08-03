@@ -333,8 +333,7 @@ public class PlayScene extends AGScene {
             selectHammer();
             recoverAmmo();
             updateAmmoBar();
-            createLittleHammer();
-            createBigHammer();
+            createHammer();
             createMoney();
             verifyHammerBanditsCollision();
             verifyMoneyCouroCollision();
@@ -385,6 +384,10 @@ public class PlayScene extends AGScene {
         }
     }
 
+    private String selectedHammer() {
+        return hammerSelected.vrPosition == littleHammer.vrPosition ? "little" : "big";
+    }
+
     // Recupera munição a cada x milisegundos (ammoTime)
     private void recoverAmmo() {
         ammoTime.update();
@@ -412,12 +415,12 @@ public class PlayScene extends AGScene {
         }
     }
 
-    // Coloca um Martelinho no vetor de martelos
-    private void createLittleHammer() {
+    private void createHammer() {
         hammerTime.update();
 
         // Tenta reciclar um Martelo criado anteriormente
         if (shoot.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            String kindHammer = hammerSelected
             // Impede que seja criado outro martelo antes do intervalo (500ms) entre um e outro
             if (!hammerTime.isTimeEnded()) {
                 return;
@@ -453,50 +456,6 @@ public class PlayScene extends AGScene {
             newHammer.vrPosition.fX = couro.vrPosition.fX;
             newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
             littleHammerVector.add(newHammer);
-        }
-    }
-
-    // Coloca um Martelo no vetor de martelos
-    private void createBigHammer() {
-        hammerTime.update();
-
-        // Tenta reciclar um Martelo criado anteriormente
-        if (shoot.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            // Impede que seja criado outro martelo antes do intervalo (500ms) entre um e outro
-            if (!hammerTime.isTimeEnded()) {
-                return;
-            }
-
-            // Impede de atirar quando esvaziar a ammoBar
-            if (!fullAmmoBar.collide(emptyAmmoBar)) {
-                return;
-            }
-
-            hammerTime.restart();
-
-            ammoSpent -= 100;
-
-            // Anima o lançamento do martelão
-            if (couro.getCurrentAnimationIndex() == 0)
-                couro.setCurrentAnimation(1);
-            couro.getCurrentAnimation().restart();
-
-            for (AGSprite hammer : bigHammerVector) {
-
-                if (hammer.bRecycled) {
-                    hammer.bRecycled = false;
-                    hammer.bVisible = true;
-                    hammer.vrPosition.fX = couro.vrPosition.fX;
-                    hammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + hammer.getSpriteHeight() / 2;
-                    return;
-                }
-            }
-
-            AGSprite newHammer = createSprite(R.drawable.big_hammer, 1, 1);
-            newHammer.setScreenPercent(8, 5);
-            newHammer.vrPosition.fX = couro.vrPosition.fX;
-            newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
-            bigHammerVector.add(newHammer);
         }
     }
 
