@@ -69,10 +69,7 @@ public class PlayScene extends AGScene {
 
     @Override
     public void init() {
-        // Carrega as imagens na memoria
-        //createSprite(R.drawable.hammer, 1, 1).bVisible = false;
-        //createSprite(R.drawable.comndenation, 4, 2).bVisible = false;
-
+        // Vetores de martelo, dinheiro e condenações
         hammerVector = new ArrayList<AGSprite>();
         moneyVector = new ArrayList<AGSprite>();
         condemnationVector = new ArrayList<AGSprite>();
@@ -191,7 +188,6 @@ public class PlayScene extends AGScene {
         // Criando efeitos sonoros de eventos
         effectDowncastBandit = AGSoundManager.vrSoundEffects.loadSoundEffect("downcast_bandit.mp3");
 
-        // TODO: Corrigir animação michael jackson dos bandidões
         // Carrega os sprites dos bandits
         bandits[0] = createSprite(R.drawable.molusco, 6, 4);
         bandits[0].setScreenPercent(20, 11);
@@ -291,10 +287,12 @@ public class PlayScene extends AGScene {
     }
 
     @Override
-    public void restart() {}
+    public void restart() {
+    }
 
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
     @Override
     public void loop() {
@@ -309,8 +307,8 @@ public class PlayScene extends AGScene {
             updateAmmoBar();
             createHammers();
             createMoney();
-            verifyHammerBanditsColision();
-            verifyMoneyCouroColision();
+            verifyHammerBanditsCollision();
+            verifyMoneyCouroCollision();
             updateCouroMovement();
             updateBandits();
             updateCondemnations();
@@ -337,7 +335,7 @@ public class PlayScene extends AGScene {
         }
 
         // Game Over
-        else  {
+        else {
             if (restartGame.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 Log.d("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getX()));
                 Log.d("TAG", Float.toString(AGInputManager.vrTouchEvents.getLastPosition().getY()));
@@ -401,15 +399,15 @@ public class PlayScene extends AGScene {
     // Atualiza o status de munição de Couro
     private void updateAmmoBar() {
         if (ammoSpent < 0) {
-            ammoSpent++;
+            ammoSpent += 4;
             if (fullAmmoBar.collide(emptyAmmoBar))
-                fullAmmoBar.vrPosition.fX += 1;
+                fullAmmoBar.vrPosition.fX += 4;
         }
 
         if (ammoRecovered > 0) {
-            ammoRecovered--;
+            ammoRecovered -= 2;
             if (fullAmmoBar.vrPosition.fX != emptyAmmoBar.vrPosition.fX)
-                fullAmmoBar.vrPosition.fX -= 1;
+                fullAmmoBar.vrPosition.fX -= 2;
         }
     }
 
@@ -435,7 +433,7 @@ public class PlayScene extends AGScene {
             if (couro.getCurrentAnimation().isAnimationEnded())
                 if (couro.getCurrentAnimationIndex() == 0)
                     couro.setCurrentAnimation(1);
-                couro.getCurrentAnimation().restart();
+            couro.getCurrentAnimation().restart();
 
             for (AGSprite hammer : hammerVector) {
 
@@ -495,7 +493,7 @@ public class PlayScene extends AGScene {
     }
 
     // Metodo que verifica a colisão entre Martelos e Bandidos
-    private void verifyHammerBanditsColision() {
+    private void verifyHammerBanditsCollision() {
         for (AGSprite hammer : hammerVector) {
             if (hammer.bRecycled)
                 continue;
@@ -510,11 +508,11 @@ public class PlayScene extends AGScene {
 
                     if (bandit.vrDirection.fX == 1) {
                         bandit.vrDirection.fX = -1;
-                        bandit.iMirror = AGSprite.NONE;
+                        bandit.iMirror = AGSprite.HORIZONTAL;
                         bandit.vrPosition.fX = AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2;
                     } else {
                         bandit.vrDirection.fX = 1;
-                        bandit.iMirror = AGSprite.HORIZONTAL;
+                        bandit.iMirror = AGSprite.NONE;
                         bandit.vrPosition.fX = -bandit.getSpriteWidth();
                     }
                     break;
@@ -525,7 +523,7 @@ public class PlayScene extends AGScene {
     }
 
     // Método que verifica a colisão entre propina e couro
-    private void verifyMoneyCouroColision() {
+    private void verifyMoneyCouroCollision() {
         for (AGSprite money : moneyVector) {
             if (money.bRecycled) {
                 continue;
@@ -573,14 +571,14 @@ public class PlayScene extends AGScene {
             if (bandit.vrDirection.fX == 1) {
                 // Indo para a direita
                 if (bandit.vrPosition.fX >= AGScreenManager.iScreenWidth + bandit.getSpriteWidth() / 2) {
-                    bandit.iMirror = AGSprite.NONE;
                     bandit.vrDirection.fX = -1;
+                    bandit.iMirror = AGSprite.HORIZONTAL;
                 }
             } else {
                 // Indo para a esquerda
                 if (bandit.vrPosition.fX <= -bandit.getSpriteWidth() / 2) {
-                    bandit.iMirror = AGSprite.HORIZONTAL;
                     bandit.vrDirection.fX = 1;
+                    bandit.iMirror = AGSprite.NONE;
                 }
             }
         }
@@ -646,13 +644,6 @@ public class PlayScene extends AGScene {
             score--;
         }
 
-        if (isCouroDefeated()) {
-            // TODO: implementar imagem gameover sobrepondo o jogo (jogar novamente ou sair)
-            gameOver = true;
-            showGameOverMenu();
-            return;
-        }
-
         if (positiveScoreTime == 0 && negativeScoreTime == 0) {
             for (AGSprite digito : scoreboard) {
                 digito.bVisible = true;
@@ -665,6 +656,12 @@ public class PlayScene extends AGScene {
         scoreboard[2].setCurrentAnimation((score % 10000) / 1000);
         scoreboard[1].setCurrentAnimation((score % 100000) / 10000);
         scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
+
+        if (isCouroDefeated()) {
+            gameOver = true;
+            showGameOverMenu();
+            return;
+        }
     }
 
     // Metodo utilizado para criar animação ao abater um Bandido

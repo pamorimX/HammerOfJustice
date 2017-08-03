@@ -75,7 +75,7 @@ public class MenuScene extends AGScene {
         }
 
         if (exitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            vrGameManager.vrActivity.finish();
+            //vrGameManager.vrActivity.finish();
         }
     }
 }
