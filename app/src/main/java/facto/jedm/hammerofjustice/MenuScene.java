@@ -5,6 +5,7 @@ import android.cg.com.megavirada.AndGraph.AGInputManager;
 import android.cg.com.megavirada.AndGraph.AGScene;
 import android.cg.com.megavirada.AndGraph.AGScreenManager;
 import android.cg.com.megavirada.AndGraph.AGSprite;
+import android.util.Log;
 
 public class MenuScene extends AGScene {
     // TODO: 05/07/17 Providenciar background da tela de menu
@@ -12,6 +13,7 @@ public class MenuScene extends AGScene {
     private AGSprite background = null;
     private AGSprite playButton = null;
     private AGSprite creditsButton = null;
+    private AGSprite instructionsButton = null;
     private AGSprite quitButton = null;
 
     public MenuScene(AGGameManager pManager) {
@@ -35,19 +37,36 @@ public class MenuScene extends AGScene {
         playButton = this.createSprite(R.drawable.play_menu, 1, 1);
         playButton.setScreenPercent(64, 10);
         playButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        playButton.vrPosition.setY(AGScreenManager.iScreenHeight / ((float) 4 / 3));
 
         // Criando e definindo botão créditos
         creditsButton = this.createSprite(R.drawable.credits_menu, 1, 1);
         creditsButton.setScreenPercent(64, 10);
         creditsButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        creditsButton.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
+
+        // Criando e definindo botão instruções
+        instructionsButton = this.createSprite(R.drawable.instructions_menu, 1, 1);
+        instructionsButton.setScreenPercent(64, 10);
+        instructionsButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
 
         // Criando e definindo botão quit_menu
         quitButton = this.createSprite(R.drawable.quit_menu, 1, 1);
         quitButton.setScreenPercent(64, 10);
         quitButton.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        quitButton.vrPosition.setY(AGScreenManager.iScreenHeight / 4);
+
+        // Calcula o espaço ocupado por todos os sprites dispostos verticalmente
+        float buttonsSpace = playButton.getSpriteHeight() + creditsButton.getSpriteHeight()
+                + instructionsButton.getSpriteHeight() + quitButton.getSpriteHeight();
+
+        // Calcula espaço livre TOTAL no espaço vertical entre os botões
+        float freeButtonsSpace = AGScreenManager.iScreenHeight - buttonsSpace;
+
+        // Calcula espaço livre entre botões dispostos verticalmente
+        float spaceBetweenButtons = freeButtonsSpace / 5;
+
+        quitButton.vrPosition.setY(spaceBetweenButtons + quitButton.getSpriteHeight() / 2);
+        instructionsButton.vrPosition.setY(quitButton.vrPosition.fY + spaceBetweenButtons + instructionsButton.getSpriteHeight());
+        creditsButton.vrPosition.setY(instructionsButton.vrPosition.fY + spaceBetweenButtons + creditsButton.getSpriteHeight());
+        playButton.vrPosition.setY(creditsButton.vrPosition.fY + spaceBetweenButtons + playButton.getSpriteHeight());
     }
 
     @Override
@@ -58,16 +77,25 @@ public class MenuScene extends AGScene {
 
     @Override
     public void loop() {
-        if (playButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            vrGameManager.setCurrentScene(1);
-        }
+        if (AGInputManager.vrTouchEvents.screenClicked()) {
+            if (playButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                vrGameManager.setCurrentScene(1);
+                return;
+            }
 
-        else if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            vrGameManager.setCurrentScene(2);
-        }
+            if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                vrGameManager.setCurrentScene(2);
+                return;
+            }
 
-        else if (quitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            vrGameManager.vrActivity.finish();
+            if (instructionsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                vrGameManager.setCurrentScene(3);
+                return;
+            }
+
+            if (quitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                vrGameManager.vrActivity.finish();
+            }
         }
     }
 }

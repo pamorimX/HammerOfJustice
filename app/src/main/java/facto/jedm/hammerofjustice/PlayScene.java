@@ -33,13 +33,13 @@ public class PlayScene extends AGScene {
     int effectDowncastBandit = 0;
 
     // Controle de saldo
-    int score = 10;
-    int positiveScoreTime = 0;
-    int negativeScoreTime = 0;
+    int score;
+    int positiveScoreTime;
+    int negativeScoreTime;
 
     // Controle de munição gasta e recuperada
-    int ammoSpent = 0;
-    int ammoRecovered = 0;
+    int ammoSpent;
+    int ammoRecovered;
 
     // Controles de paralisação
     boolean pause;
@@ -52,14 +52,14 @@ public class PlayScene extends AGScene {
     AGSprite arrowRight = null;
     AGSprite littleHammer = null;
     AGSprite bigHammer = null;
-    AGSprite hammerSelected = null;
+    AGSprite hammerSelectedIndicator = null;
     AGSprite shoot = null;
     AGSprite pauseMenu = null;
-    AGSprite resume = null;
-    AGSprite quit = null;
+    AGSprite resumeGameButton = null;
+    AGSprite quitGameButton = null;
     AGSprite gameOverMenu = null;
-    AGSprite restartGame = null;
-    AGSprite goHomeMenu = null;
+    AGSprite restartGameButton = null;
+    AGSprite goHomeMenuButton = null;
     AGSprite topBar = null;
     AGSprite bottomBar = null;
     AGSprite emptyAmmoBar = null;
@@ -73,6 +73,17 @@ public class PlayScene extends AGScene {
 
     @Override
     public void init() {
+        // Parâmetros iniciais de jogo
+        score = 10;
+        positiveScoreTime = 0;
+        negativeScoreTime = 0;
+
+        ammoSpent = 0;
+        ammoRecovered = 0;
+
+        pause = false;
+        gameOver = false;
+
         // Vetores de martelo, dinheiro e condenações
         littleHammerVector = new ArrayList<AGSprite>();
         bigHammerVector = new ArrayList<AGSprite>();
@@ -140,10 +151,10 @@ public class PlayScene extends AGScene {
         bigHammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
         bigHammer.bAutoRender = false;
 
-        hammerSelected = createSprite(R.drawable.selected_hammer, 1, 1);
-        hammerSelected.setScreenPercent(16, 9);
-        hammerSelected.bVisible = true;
-        hammerSelected.bAutoRender = false;
+        hammerSelectedIndicator = createSprite(R.drawable.selected_hammer, 1, 1);
+        hammerSelectedIndicator.setScreenPercent(16, 9);
+        hammerSelectedIndicator.bVisible = true;
+        hammerSelectedIndicator.bAutoRender = false;
 
         // Carrega lançados de martelos
         shoot = createSprite(R.drawable.shoot, 1, 1);
@@ -158,15 +169,15 @@ public class PlayScene extends AGScene {
         float freeBottomBarSpace = AGScreenManager.iScreenWidth - totalBottomBarSpritesWidth;
 
         // Calcula espaço livre entre sprites da barra de controle (inferior)
-        float ctrlFillSpace = freeBottomBarSpace / 6;
+        float fillSpace = freeBottomBarSpace / 6;
 
-        arrowLeft.vrPosition.setX(ctrlFillSpace + arrowLeft.getSpriteWidth() / 2);
-        arrowRight.vrPosition.setX(arrowLeft.vrPosition.fX + ctrlFillSpace + arrowRight.getSpriteWidth());
-        littleHammer.vrPosition.setX(arrowRight.vrPosition.fX + ctrlFillSpace + littleHammer.getSpriteWidth());
-        bigHammer.vrPosition.setX(littleHammer.vrPosition.fX + ctrlFillSpace + bigHammer.getSpriteWidth());
-        shoot.vrPosition.setX(bigHammer.vrPosition.fX + ctrlFillSpace + shoot.getSpriteWidth());
+        arrowLeft.vrPosition.setX(fillSpace + arrowLeft.getSpriteWidth() / 2);
+        arrowRight.vrPosition.setX(arrowLeft.vrPosition.fX + fillSpace + arrowRight.getSpriteWidth());
+        littleHammer.vrPosition.setX(arrowRight.vrPosition.fX + fillSpace + littleHammer.getSpriteWidth());
+        bigHammer.vrPosition.setX(littleHammer.vrPosition.fX + fillSpace + bigHammer.getSpriteWidth());
+        shoot.vrPosition.setX(bigHammer.vrPosition.fX + fillSpace + shoot.getSpriteWidth());
 
-        hammerSelected.vrPosition = littleHammer.vrPosition;
+        hammerSelectedIndicator.vrPosition = littleHammer.vrPosition;
 
         // Posiciona cada dígito à direita do anterior
         // Cria as 10 animações pra cada dígito do placar
@@ -180,10 +191,6 @@ public class PlayScene extends AGScene {
                 scoreboard[pos].addAnimation(1, false, i);
             }
         }
-
-        // Setando controles de paralisação
-        pause = false;
-        gameOver = false;
 
         // Setando tempo de repetição das ações Couro, Martelo e Maço de dinheiro
         couroTime = new AGTimer(25);
@@ -224,19 +231,19 @@ public class PlayScene extends AGScene {
         pauseMenu.bVisible = false;
         pauseMenu.bAutoRender = false;
 
-        resume = createSprite(R.drawable.resume_game, 1, 1);
-        resume.setScreenPercent(76, 9);
-        resume.vrPosition.fX = pauseMenu.vrPosition.fX;
-        resume.vrPosition.fY = pauseMenu.vrPosition.fY;
-        resume.bVisible = false;
-        resume.bAutoRender = false;
+        resumeGameButton = createSprite(R.drawable.resume_game, 1, 1);
+        resumeGameButton.setScreenPercent(76, 9);
+        resumeGameButton.vrPosition.fX = pauseMenu.vrPosition.fX;
+        resumeGameButton.vrPosition.fY = pauseMenu.vrPosition.fY;
+        resumeGameButton.bVisible = false;
+        resumeGameButton.bAutoRender = false;
 
-        quit = createSprite(R.drawable.quit_game, 1, 1);
-        quit.setScreenPercent(76, 9);
-        quit.vrPosition.fX = pauseMenu.vrPosition.fX;
-        quit.vrPosition.fY = resume.vrPosition.fY - resume.getSpriteHeight() - quit.getSpriteHeight() / 2;
-        quit.bVisible = false;
-        quit.bAutoRender = false;
+        quitGameButton = createSprite(R.drawable.quit_game, 1, 1);
+        quitGameButton.setScreenPercent(76, 9);
+        quitGameButton.vrPosition.fX = pauseMenu.vrPosition.fX;
+        quitGameButton.vrPosition.fY = resumeGameButton.vrPosition.fY - resumeGameButton.getSpriteHeight() - quitGameButton.getSpriteHeight() / 2;
+        quitGameButton.bVisible = false;
+        quitGameButton.bAutoRender = false;
 
         gameOverMenu = createSprite(R.drawable.game_over_menu, 1, 1);
         gameOverMenu.setScreenPercent(76, 40);
@@ -245,19 +252,19 @@ public class PlayScene extends AGScene {
         gameOverMenu.bVisible = false;
         gameOverMenu.bAutoRender = false;
 
-        restartGame = createSprite(R.drawable.restart_game, 1, 1);
-        restartGame.setScreenPercent(76, 9);
-        restartGame.vrPosition.fX = gameOverMenu.vrPosition.fX;
-        restartGame.vrPosition.fY = gameOverMenu.vrPosition.fY;
-        restartGame.bVisible = false;
-        restartGame.bAutoRender = false;
+        restartGameButton = createSprite(R.drawable.restart_game, 1, 1);
+        restartGameButton.setScreenPercent(76, 9);
+        restartGameButton.vrPosition.fX = gameOverMenu.vrPosition.fX;
+        restartGameButton.vrPosition.fY = gameOverMenu.vrPosition.fY;
+        restartGameButton.bVisible = false;
+        restartGameButton.bAutoRender = false;
 
-        goHomeMenu = createSprite(R.drawable.go_home, 1, 1);
-        goHomeMenu.setScreenPercent(76, 9);
-        goHomeMenu.vrPosition.fX = pauseMenu.vrPosition.fX;
-        goHomeMenu.vrPosition.fY = gameOverMenu.vrPosition.fY - restartGame.getSpriteHeight() - goHomeMenu.getSpriteHeight() / 2;
-        goHomeMenu.bVisible = false;
-        goHomeMenu.bAutoRender = false;
+        goHomeMenuButton = createSprite(R.drawable.go_home, 1, 1);
+        goHomeMenuButton.setScreenPercent(76, 9);
+        goHomeMenuButton.vrPosition.fX = pauseMenu.vrPosition.fX;
+        goHomeMenuButton.vrPosition.fY = gameOverMenu.vrPosition.fY - restartGameButton.getSpriteHeight() - goHomeMenuButton.getSpriteHeight() / 2;
+        goHomeMenuButton.bVisible = false;
+        goHomeMenuButton.bAutoRender = false;
     }
 
     @Override
@@ -274,13 +281,13 @@ public class PlayScene extends AGScene {
 
         // Menu de pausa
         pauseMenu.render();
-        resume.render();
-        quit.render();
+        resumeGameButton.render();
+        quitGameButton.render();
 
         // Menu de Game Over
         gameOverMenu.render();
-        restartGame.render();
-        goHomeMenu.render();
+        restartGameButton.render();
+        goHomeMenuButton.render();
 
         // Barra Inferior
         bottomBar.render();
@@ -288,15 +295,17 @@ public class PlayScene extends AGScene {
         arrowRight.render();
         littleHammer.render();
         bigHammer.render();
-        hammerSelected.render();
+        hammerSelectedIndicator.render();
         shoot.render();
     }
 
     @Override
-    public void restart() {}
+    public void restart() {
+    }
 
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
     @Override
     public void loop() {
@@ -306,26 +315,18 @@ public class PlayScene extends AGScene {
 
         // Jogo pausado
         if (pause) {
-            if (resume.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            if (resumeGameButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 pauseEvent();
-            }
-
-            else if (quit.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            } else if (quitGameButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 vrGameManager.setCurrentScene(0);
             }
         }
 
         // Game Over
         else if (gameOver) {
-            if (restartGame.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-                //score = 10;
-                positiveScoreTime = 10;
-                fullAmmoBar.vrPosition = emptyAmmoBar.vrPosition;
-                //this.restart();
-                switchGameOverMenu();
-            }
-
-            else if (goHomeMenu.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            if (restartGameButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                init();
+            } else if (goHomeMenuButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 vrGameManager.setCurrentScene(0);
             }
         }
@@ -349,7 +350,7 @@ public class PlayScene extends AGScene {
     }
 
     // Seta a flag de pausa e chama o menu de pausa
-    public void pauseEvent() {
+    private void pauseEvent() {
         pause = !pause;
         switchPauseMenu();
     }
@@ -357,37 +358,37 @@ public class PlayScene extends AGScene {
     // Alterna o menu de pausa de acordo com o estado de execução do jogo
     private void switchPauseMenu() {
         pauseMenu.bVisible = !pauseMenu.bVisible;
-        resume.bVisible = !resume.bVisible;
-        quit.bVisible = !quit.bVisible;
+        resumeGameButton.bVisible = !resumeGameButton.bVisible;
+        quitGameButton.bVisible = !quitGameButton.bVisible;
     }
 
     // Exibe o menu de game over
     private void switchGameOverMenu() {
         gameOver = !gameOver;
         gameOverMenu.bVisible = !gameOverMenu.bVisible;
-        restartGame.bVisible = !restartGame.bVisible;
-        goHomeMenu.bVisible = !goHomeMenu.bVisible;
+        restartGameButton.bVisible = !restartGameButton.bVisible;
+        goHomeMenuButton.bVisible = !goHomeMenuButton.bVisible;
     }
 
     // Seleciona o tipo de martelo a ser disparado
     private void selectHammer() {
         if (littleHammer.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            if (littleHammer.vrPosition == hammerSelected.vrPosition) {
+            if (littleHammer.vrPosition == hammerSelectedIndicator.vrPosition) {
                 return;
             } else {
-                hammerSelected.vrPosition = littleHammer.vrPosition;
+                hammerSelectedIndicator.vrPosition = littleHammer.vrPosition;
             }
         } else if (bigHammer.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            if (bigHammer.vrPosition == hammerSelected.vrPosition) {
+            if (bigHammer.vrPosition == hammerSelectedIndicator.vrPosition) {
                 return;
             } else {
-                hammerSelected.vrPosition = bigHammer.vrPosition;
+                hammerSelectedIndicator.vrPosition = bigHammer.vrPosition;
             }
         }
     }
 
     private String selectedHammer() {
-        return hammerSelected.vrPosition == littleHammer.vrPosition ? "little" : "big";
+        return hammerSelectedIndicator.vrPosition == littleHammer.vrPosition ? "little" : "big";
     }
 
     // Recupera munição a cada x milisegundos (ammoTime)
@@ -680,8 +681,6 @@ public class PlayScene extends AGScene {
         scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
 
         if (isCouroDefeated()) {
-            positiveScoreTime = 0;
-            negativeScoreTime = 0;
             switchGameOverMenu();
         }
     }

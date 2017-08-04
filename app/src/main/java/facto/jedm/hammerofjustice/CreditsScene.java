@@ -9,7 +9,7 @@ import android.cg.com.megavirada.AndGraph.AGTouchScreen;
 
 public class CreditsScene extends AGScene {
     private AGSprite background = null;
-//    private AGSprite goHomeMenu = null;
+//    private AGSprite goHomeMenuButton = null;
 
     public CreditsScene(AGGameManager pManager) {
         super(pManager);
@@ -22,10 +22,10 @@ public class CreditsScene extends AGScene {
         background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
 
-//        goHomeMenu = createSprite(R.drawable.go_home, 1, 1);
-//        goHomeMenu.setScreenPercent(76, 9);
-//        goHomeMenu.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
-//        goHomeMenu.vrPosition.fY = AGScreenManager.iScreenHeight / 2;
+//        goHomeMenuButton = createSprite(R.drawable.go_home, 1, 1);
+//        goHomeMenuButton.setScreenPercent(76, 9);
+//        goHomeMenuButton.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
+//        goHomeMenuButton.vrPosition.fY = AGScreenManager.iScreenHeight / 2;
     }
 
     @Override
@@ -42,7 +42,6 @@ public class CreditsScene extends AGScene {
     public void loop() {
         if (AGInputManager.vrTouchEvents.backButtonClicked()) {
             vrGameManager.setCurrentScene(0);
-//            return;
         }
     }
 }
