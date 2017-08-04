@@ -15,7 +15,6 @@ public class CreditsScene extends AGScene {
 
     @Override
     public void init() {
-        //setSceneBackgroundColor(0.49f, 0.44f, 0.89f);
         setSceneBackgroundColor(0.43f, 0.48f, 0.9f);
     }
 
