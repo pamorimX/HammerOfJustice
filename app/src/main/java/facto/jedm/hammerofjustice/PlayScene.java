@@ -400,7 +400,7 @@ public class PlayScene extends AGScene {
 
         if (fullAmmoBar.vrPosition.fX != emptyAmmoBar.vrPosition.fX) {
             if (ammoTime.isTimeEnded()) {
-                ammoRecovered += 10;
+                ammoRecovered += 20;
                 ammoTime.restart();
             }
         }
@@ -409,15 +409,15 @@ public class PlayScene extends AGScene {
     // Atualiza o status de munição de Couro
     private void updateAmmoBar() {
         if (ammoSpent < 0) {
-            ammoSpent += 4;
+            ammoSpent += 5;
             if (fullAmmoBar.collide(emptyAmmoBar))
-                fullAmmoBar.vrPosition.fX += 4;
+                fullAmmoBar.vrPosition.fX += 5;
         }
 
         if (ammoRecovered > 0) {
-            ammoRecovered -= 2;
+            ammoRecovered -= 4;
             if (fullAmmoBar.vrPosition.fX != emptyAmmoBar.vrPosition.fX)
-                fullAmmoBar.vrPosition.fX -= 2;
+                fullAmmoBar.vrPosition.fX -= 4;
         }
     }
 
@@ -507,7 +507,7 @@ public class PlayScene extends AGScene {
                 }
 
                 AGSprite newMoney = createSprite(R.drawable.pack_of_money, 1, 1);
-                newMoney.setScreenPercent(8, 5);
+                newMoney.setScreenPercent(6, 2);
                 newMoney.vrPosition.fX = bandit.vrPosition.fX;
                 newMoney.vrPosition.fY = bandit.vrPosition.fY - (bandit.getSpriteHeight() / 2) - (newMoney.getSpriteHeight() / 2);
                 moneyVector.add(newMoney);
@@ -562,7 +562,7 @@ public class PlayScene extends AGScene {
                 continue;
             }
             if (money.collide(couro)) {
-                negativeScoreTime -= 100;
+                negativeScoreTime -= 50;
                 //createExplosionAnimation(couro.vrPosition.fX, couro.vrPosition.fY);
                 money.bRecycled = true;
                 money.bVisible = false;
