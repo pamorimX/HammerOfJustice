@@ -8,7 +8,6 @@ import android.cg.com.megavirada.AndGraph.AGSprite;
 import android.cg.com.megavirada.AndGraph.AGTouchScreen;
 
 public class CreditsScene extends AGScene {
-    private AGSprite background = null;
 
     public CreditsScene(AGGameManager pManager) {
         super(pManager);
@@ -16,10 +15,8 @@ public class CreditsScene extends AGScene {
 
     @Override
     public void init() {
-        background = createSprite(R.drawable.background_credits, 1, 1);
-        background.setScreenPercent(100, 100);
-        background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
+        //setSceneBackgroundColor(0.49f, 0.44f, 0.89f);
+        setSceneBackgroundColor(0.43f, 0.48f, 0.9f);
     }
 
     @Override

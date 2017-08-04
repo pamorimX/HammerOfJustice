@@ -409,20 +409,22 @@ public class PlayScene extends AGScene {
     // Atualiza o status de munição de Couro
     private void updateAmmoBar() {
         if (ammoSpent < 0) {
-            ammoSpent += 5;
-            if (fullAmmoBar.collide(emptyAmmoBar))
-                fullAmmoBar.vrPosition.fX += 5;
-            else {
+            ammoSpent += 15;
+            if (fullAmmoBar.collide(emptyAmmoBar)) {
+                fullAmmoBar.vrPosition.fX += 15;
+            }
+            if (!fullAmmoBar.collide(emptyAmmoBar)) {
                 ammoSpent = 0;
                 fullAmmoBar.vrPosition.fX = emptyAmmoBar.vrPosition.fX + emptyAmmoBar.getSpriteWidth();
             }
         }
 
         if (ammoRecovered > 0) {
-            ammoRecovered -= 4;
+            ammoRecovered -= 15;
             if (fullAmmoBar.vrPosition.fX != emptyAmmoBar.vrPosition.fX) {
-                fullAmmoBar.vrPosition.fX -= 4;
-            } else {
+                fullAmmoBar.vrPosition.fX -= 15;
+            }
+            if (fullAmmoBar.vrPosition.fX < emptyAmmoBar.vrPosition.fX) {
                 ammoRecovered = 0;
                 fullAmmoBar.vrPosition.fX = emptyAmmoBar.vrPosition.fX;
             }

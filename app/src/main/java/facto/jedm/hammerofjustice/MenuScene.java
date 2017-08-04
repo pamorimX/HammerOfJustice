@@ -8,9 +8,7 @@ import android.cg.com.megavirada.AndGraph.AGSprite;
 import android.util.Log;
 
 public class MenuScene extends AGScene {
-    // TODO: 05/07/17 Providenciar background da tela de menu
 
-    private AGSprite background = null;
     private AGSprite playButton = null;
     private AGSprite creditsButton = null;
     private AGSprite instructionsButton = null;
@@ -27,11 +25,8 @@ public class MenuScene extends AGScene {
         //AGSoundManager.vrMusic.play();
 
         // Carregando plano de fundo
-        // setSceneBackgroundColor("#000000");
-        background = createSprite(R.drawable.background_menu, 1, 1);
-        background.setScreenPercent(100, 100);
-        background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
-        background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
+        //setSceneBackgroundColor(0.49f, 0.44f, 0.89f);
+        setSceneBackgroundColor(0.43f, 0.48f, 0.9f);
 
         // Criando e definindo botão jogar
         playButton = this.createSprite(R.drawable.play_menu, 1, 1);

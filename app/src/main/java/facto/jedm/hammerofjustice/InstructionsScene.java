@@ -12,7 +12,10 @@ public class InstructionsScene extends AGScene {
     }
 
     @Override
-    public void init() {}
+    public void init() {
+        //setSceneBackgroundColor(0.49f, 0.44f, 0.89f);
+        setSceneBackgroundColor(0.43, 0.48, 0.9);
+    }
 
     @Override
     public void restart() {}
