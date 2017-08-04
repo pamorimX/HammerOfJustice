@@ -412,12 +412,20 @@ public class PlayScene extends AGScene {
             ammoSpent += 5;
             if (fullAmmoBar.collide(emptyAmmoBar))
                 fullAmmoBar.vrPosition.fX += 5;
+            else {
+                ammoSpent = 0;
+                fullAmmoBar.vrPosition.fX = emptyAmmoBar.vrPosition.fX + emptyAmmoBar.getSpriteWidth();
+            }
         }
 
         if (ammoRecovered > 0) {
             ammoRecovered -= 4;
-            if (fullAmmoBar.vrPosition.fX != emptyAmmoBar.vrPosition.fX)
+            if (fullAmmoBar.vrPosition.fX != emptyAmmoBar.vrPosition.fX) {
                 fullAmmoBar.vrPosition.fX -= 4;
+            } else {
+                ammoRecovered = 0;
+                fullAmmoBar.vrPosition.fX = emptyAmmoBar.vrPosition.fX;
+            }
         }
     }
 
