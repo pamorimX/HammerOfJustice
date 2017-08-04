@@ -74,7 +74,7 @@ public class PlayScene extends AGScene {
     @Override
     public void init() {
         // Parâmetros iniciais de jogo
-        score = 10;
+        score = 100;
         positiveScoreTime = 0;
         negativeScoreTime = 0;
 
@@ -142,17 +142,17 @@ public class PlayScene extends AGScene {
 
         // Carrega selecionador de martelos
         littleHammer = createSprite(R.drawable.little_hammer, 1, 1);
-        littleHammer.setScreenPercent(13, 8);
+        littleHammer.setScreenPercent(14, 6);
         littleHammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
         littleHammer.bAutoRender = false;
 
         bigHammer = createSprite(R.drawable.big_hammer, 1, 1);
-        bigHammer.setScreenPercent(13, 8);
+        bigHammer.setScreenPercent(14, 6);
         bigHammer.vrPosition.setY(bottomBar.getSpriteHeight() / 2);
         bigHammer.bAutoRender = false;
 
-        hammerSelectedIndicator = createSprite(R.drawable.selected_hammer, 1, 1);
-        hammerSelectedIndicator.setScreenPercent(16, 9);
+        hammerSelectedIndicator = createSprite(R.drawable.hammer_selected_indicator, 1, 1);
+        hammerSelectedIndicator.setScreenPercent(15, 8);
         hammerSelectedIndicator.bVisible = true;
         hammerSelectedIndicator.bAutoRender = false;
 
@@ -177,7 +177,8 @@ public class PlayScene extends AGScene {
         bigHammer.vrPosition.setX(littleHammer.vrPosition.fX + fillSpace + bigHammer.getSpriteWidth());
         shoot.vrPosition.setX(bigHammer.vrPosition.fX + fillSpace + shoot.getSpriteWidth());
 
-        hammerSelectedIndicator.vrPosition = littleHammer.vrPosition;
+        // Definindo o martelo selecionado inicialmente
+        hammerSelectedIndicator.vrPosition = bigHammer.vrPosition;
 
         // Posiciona cada dígito à direita do anterior
         // Cria as 10 animações pra cada dígito do placar
@@ -215,14 +216,16 @@ public class PlayScene extends AGScene {
         bandits[1].addAnimation(10, true, 0, 7);
         bandits[1].vrDirection.fX = -1;
         bandits[1].vrPosition.fX = AGScreenManager.iScreenWidth + bandits[1].getSpriteWidth() / 2;
-        bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight();
+        //bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight();
+        bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight()/2;
 
         bandits[2] = createSprite(R.drawable.toupeirona, 4, 2);
         bandits[2].setScreenPercent(20, 12);
         bandits[2].addAnimation(10, true, 0, 7);
         bandits[2].vrDirection.fX = 1;
         bandits[2].vrPosition.fX = -bandits[2].getSpriteWidth() / 2;
-        bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight();
+        //bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight();
+        bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight()/2;
 
         pauseMenu = createSprite(R.drawable.pause_menu, 1, 1);
         pauseMenu.setScreenPercent(76, 40);
@@ -435,7 +438,12 @@ public class PlayScene extends AGScene {
 
             hammerTime.restart();
 
-            ammoSpent -= 100;
+            // Atualizando gasto com munição de acordo com o martelo atirado
+            if (selectedHammer() == "little") {
+                ammoSpent -= 150;
+            } else {
+                ammoSpent -= 100;
+            }
 
             // Anima o lançamento do martelinho
             if (couro.getCurrentAnimationIndex() == 0)
@@ -453,8 +461,16 @@ public class PlayScene extends AGScene {
                 }
             }
 
-            AGSprite newHammer = createSprite((selectedHammer() == "little" ? R.drawable.little_hammer : R.drawable.big_hammer), 1, 1);
-            newHammer.setScreenPercent(8, 5);
+            // Construindo o martelo de acordo com o tamanho selecionado
+            AGSprite newHammer;
+            if (selectedHammer() == "little") {
+                newHammer = createSprite(R.drawable.little_hammer, 1, 1);
+                newHammer.setScreenPercent(7, 3);
+            } else {
+                newHammer = createSprite(R.drawable.big_hammer, 1, 1);
+                newHammer.setScreenPercent(8, 5);
+            }
+
             newHammer.vrPosition.fX = couro.vrPosition.fX;
             newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
             (selectedHammer() == "little" ? littleHammerVector : bigHammerVector).add(newHammer);
@@ -518,6 +534,7 @@ public class PlayScene extends AGScene {
     private void recycleHammerAndBandit(AGSprite hammer) {
         for (AGSprite bandit : bandits) {
             if (hammer.collide(bandit)) {
+                // TODO: implementar pontuação exata para cada tipo de martelinho
                 positiveScoreTime += 50;
                 createExplosionAnimation(bandit.vrPosition.fX, bandit.vrPosition.fY);
                 hammer.bRecycled = true;
@@ -545,7 +562,7 @@ public class PlayScene extends AGScene {
                 continue;
             }
             if (money.collide(couro)) {
-                negativeScoreTime -= 10;
+                negativeScoreTime -= 100;
                 //createExplosionAnimation(couro.vrPosition.fX, couro.vrPosition.fY);
                 money.bRecycled = true;
                 money.bVisible = false;

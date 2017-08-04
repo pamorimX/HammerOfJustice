@@ -80,20 +80,17 @@ public class MenuScene extends AGScene {
         if (AGInputManager.vrTouchEvents.screenClicked()) {
             if (playButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 vrGameManager.setCurrentScene(1);
-                return;
             }
 
-            if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            else if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 vrGameManager.setCurrentScene(2);
-                return;
             }
 
-            if (instructionsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            else if (instructionsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 vrGameManager.setCurrentScene(3);
-                return;
             }
 
-            if (quitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+            else if (quitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
                 vrGameManager.vrActivity.finish();
             }
         }
