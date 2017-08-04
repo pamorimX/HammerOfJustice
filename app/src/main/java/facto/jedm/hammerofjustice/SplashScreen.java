@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 public class SplashScreen extends AppCompatActivity {
-    // TODO: 05/07/17 Providenciar arte para exibição na animação inicial do jogo
     // TODO: alterar TIME_SPLASH (em milisegundos) para 2000 ou mais
     private static final int TIME_SPLASH = 0;
 

@@ -318,9 +318,11 @@ public class PlayScene extends AGScene {
         // Game Over
         else if (gameOver) {
             if (restartGame.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-//                showGameOverMenu();
-                vrGameManager.setCurrentScene(0);
-                vrGameManager.setCurrentScene(1);
+                //score = 10;
+                positiveScoreTime = 10;
+                fullAmmoBar.vrPosition = emptyAmmoBar.vrPosition;
+                //this.restart();
+                switchGameOverMenu();
             }
 
             else if (goHomeMenu.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
@@ -360,7 +362,7 @@ public class PlayScene extends AGScene {
     }
 
     // Exibe o menu de game over
-    private void showGameOverMenu() {
+    private void switchGameOverMenu() {
         gameOver = !gameOver;
         gameOverMenu.bVisible = !gameOverMenu.bVisible;
         restartGame.bVisible = !restartGame.bVisible;
@@ -420,7 +422,6 @@ public class PlayScene extends AGScene {
 
         // Tenta reciclar um Martelo criado anteriormente
         if (shoot.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
-            String kindHammer = hammerSelected
             // Impede que seja criado outro martelo antes do intervalo (500ms) entre um e outro
             if (!hammerTime.isTimeEnded()) {
                 return;
@@ -440,7 +441,7 @@ public class PlayScene extends AGScene {
                 couro.setCurrentAnimation(1);
             couro.getCurrentAnimation().restart();
 
-            for (AGSprite hammer : littleHammerVector) {
+            for (AGSprite hammer : (selectedHammer() == "little" ? littleHammerVector : bigHammerVector)) {
 
                 if (hammer.bRecycled) {
                     hammer.bRecycled = false;
@@ -451,11 +452,11 @@ public class PlayScene extends AGScene {
                 }
             }
 
-            AGSprite newHammer = createSprite(R.drawable.little_hammer, 1, 1);
+            AGSprite newHammer = createSprite((selectedHammer() == "little" ? R.drawable.little_hammer : R.drawable.big_hammer), 1, 1);
             newHammer.setScreenPercent(8, 5);
             newHammer.vrPosition.fX = couro.vrPosition.fX;
             newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
-            littleHammerVector.add(newHammer);
+            (selectedHammer() == "little" ? littleHammerVector : bigHammerVector).add(newHammer);
         }
     }
 
@@ -679,7 +680,9 @@ public class PlayScene extends AGScene {
         scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
 
         if (isCouroDefeated()) {
-            showGameOverMenu();
+            positiveScoreTime = 0;
+            negativeScoreTime = 0;
+            switchGameOverMenu();
         }
     }
 

@@ -16,6 +16,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        app:srcCompat="@drawable/logo"
-        android:contentDescription="@string/logo_provis_ria_do_jogo" />
+        app:srcCompat="@drawable/splash_screen"
+        android:contentDescription="@string/logo_game" />
 </RelativeLayout>

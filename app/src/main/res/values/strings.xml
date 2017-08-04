@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HammerOfJustice</string>
+    <string name="app_name">Hammer of Justice</string>
     <string name="hammer_of_justice">Hammer Of Justice</string>
-    <string name="logo_provis_ria_do_jogo">Logo provisória do jogo</string>
+    <string name="logo_game">Logo do jogo</string>
 </resources>
