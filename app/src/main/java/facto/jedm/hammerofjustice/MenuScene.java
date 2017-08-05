@@ -4,6 +4,7 @@ import android.cg.com.megavirada.AndGraph.AGGameManager;
 import android.cg.com.megavirada.AndGraph.AGInputManager;
 import android.cg.com.megavirada.AndGraph.AGScene;
 import android.cg.com.megavirada.AndGraph.AGScreenManager;
+import android.cg.com.megavirada.AndGraph.AGSoundManager;
 import android.cg.com.megavirada.AndGraph.AGSprite;
 import android.util.Log;
 
@@ -21,8 +22,9 @@ public class MenuScene extends AGScene {
     @Override
     public void init() {
         // Carregando trilha sonora e mantendo-a em repetição
-        //AGSoundManager.vrMusic.loadMusic("abutre.mp4", true);
-        //AGSoundManager.vrMusic.play();
+        AGSoundManager.vrMusic.loadMusic("main_sound_track.mp3", true);
+        AGSoundManager.vrMusic.setVolume(1.0f, 1.0f);
+        AGSoundManager.vrMusic.play();
 
         // Carregando plano de fundo
         setSceneBackgroundColor(0.43f, 0.48f, 0.9f);

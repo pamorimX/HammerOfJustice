@@ -226,6 +226,8 @@ public class PlayScene extends AGScene {
         ammoTime = new AGTimer(2000);
 
         // Criando efeitos sonoros de eventos
+
+
         effectCouroHit = AGSoundManager.vrSoundEffects.loadSoundEffect("couro_hit.mp3");
         effectLaunchHammer = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_hammer.wav");
         effectLaunchMoney = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_money.wav");
