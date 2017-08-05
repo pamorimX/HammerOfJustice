@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class PlayScene extends AGScene {
     // Cria o Array de sprites do scoreboard
     AGSprite[] scoreboard = new AGSprite[6];
+    AGSprite lifeBoard;
 
     // Cria o vetor de tiros
     ArrayList<AGSprite> littleHammerVector = null;
@@ -30,12 +31,17 @@ public class PlayScene extends AGScene {
 
     // Efeitos sonoros de eventos
     //int effectMovement = 0;
-    int effectDowncastBandit = 0;
+    int effectCouroHit = 0;
+    int effectLaunchHammer = 0;
+    int effectLaunchMoney = 0;
 
     // Controle de saldo
     int score;
     int positiveScoreTime;
-    int negativeScoreTime;
+    //int negativeScoreTime;
+
+    // Controle de vidas
+    int lifes;
 
     // Controle de munição gasta e recuperada
     int ammoSpent;
@@ -74,9 +80,11 @@ public class PlayScene extends AGScene {
     @Override
     public void init() {
         // Parâmetros iniciais de jogo
-        score = 100;
+        score = 0;
         positiveScoreTime = 0;
-        negativeScoreTime = 0;
+        //negativeScoreTime = 0;
+
+        lifes = 5;
 
         ammoSpent = 0;
         ammoRecovered = 0;
@@ -105,14 +113,15 @@ public class PlayScene extends AGScene {
         emptyAmmoBar = createSprite(R.drawable.empty_ammo_bar, 1, 1);
         emptyAmmoBar.setScreenPercent(100, 2);
         emptyAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
-        emptyAmmoBar.vrPosition.fY = topBar.vrPosition.fY - topBar.getSpriteHeight() / 2 - emptyAmmoBar.getSpriteHeight() / 2;
         emptyAmmoBar.bAutoRender = false;
 
         fullAmmoBar = createSprite(R.drawable.full_ammo_bar, 1, 1);
-        fullAmmoBar.setScreenPercent(100, 2);
+        fullAmmoBar.setScreenPercent(100, 4);
         fullAmmoBar.vrPosition.fX = AGScreenManager.iScreenWidth / 2;
-        fullAmmoBar.vrPosition.fY = topBar.vrPosition.fY - topBar.getSpriteHeight() / 2 - fullAmmoBar.getSpriteHeight() / 2;
         fullAmmoBar.bAutoRender = false;
+
+        fullAmmoBar.vrPosition.fY = topBar.vrPosition.fY - topBar.getSpriteHeight() / 2 - fullAmmoBar.getSpriteHeight() / 2;
+        emptyAmmoBar.vrPosition.fY = fullAmmoBar.vrPosition.fY;
 
         // Barra de controle (inferior)
         bottomBar = createSprite(R.drawable.bar, 1, 1);
@@ -193,6 +202,18 @@ public class PlayScene extends AGScene {
             }
         }
 
+
+        lifeBoard = createSprite(R.drawable.numbers, 10, 1);
+        lifeBoard.setScreenPercent(9, 6);
+        lifeBoard.vrPosition.fY = topBar.vrPosition.fY;
+        lifeBoard.vrPosition.fX = AGScreenManager.iScreenWidth - 20 - lifeBoard.getSpriteWidth() / 2;
+        lifeBoard.vrPosition.fX = AGScreenManager.iScreenWidth - 20 - lifeBoard.getSpriteWidth() / 2;
+        lifeBoard.bAutoRender = false;
+        // Cria as 10 animações pra cada dígito de vidas
+        for (int i = 0; i < 10; i++) {
+            lifeBoard.addAnimation(1, false, i);
+        }
+
         // Setando tempo de repetição das ações Couro, Martelo e Maço de dinheiro
         couroTime = new AGTimer(25);
         hammerTime = new AGTimer(500);
@@ -200,7 +221,9 @@ public class PlayScene extends AGScene {
         ammoTime = new AGTimer(2000);
 
         // Criando efeitos sonoros de eventos
-        effectDowncastBandit = AGSoundManager.vrSoundEffects.loadSoundEffect("downcast_bandit.mp3");
+        effectCouroHit = AGSoundManager.vrSoundEffects.loadSoundEffect("couro_hit.mp3");
+        effectLaunchHammer = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_hammer.wav");
+        effectLaunchMoney = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_money.wav");
 
         // Carrega os sprites dos bandits
         bandits[0] = createSprite(R.drawable.molusco, 6, 4);
@@ -281,6 +304,7 @@ public class PlayScene extends AGScene {
         for (AGSprite digito : scoreboard) {
             digito.render();
         }
+        lifeBoard.render();
 
         // Menu de pausa
         pauseMenu.render();
@@ -431,6 +455,7 @@ public class PlayScene extends AGScene {
         }
     }
 
+    // Coloca um martelo no vetor de martelos
     private void createHammer() {
         hammerTime.update();
 
@@ -459,6 +484,7 @@ public class PlayScene extends AGScene {
             if (couro.getCurrentAnimationIndex() == 0)
                 couro.setCurrentAnimation(1);
             couro.getCurrentAnimation().restart();
+            AGSoundManager.vrSoundEffects.play(effectLaunchHammer);
 
             for (AGSprite hammer : (selectedHammer() == "little" ? littleHammerVector : bigHammerVector)) {
 
@@ -505,6 +531,7 @@ public class PlayScene extends AGScene {
                 }
 
                 moneyTime.restart();
+                AGSoundManager.vrSoundEffects.play(effectLaunchMoney);
 
                 for (AGSprite money : moneyVector) {
                     if (money.bRecycled) {
@@ -531,25 +558,31 @@ public class PlayScene extends AGScene {
         for (AGSprite hammer : littleHammerVector) {
             if (hammer.bRecycled)
                 continue;
-            recycleHammerAndBandit(hammer);
+            recycleHammerAndBandit(hammer, "little");
         }
         // Recicla martelão
         for (AGSprite hammer : bigHammerVector) {
             if (hammer.bRecycled)
                 continue;
-            recycleHammerAndBandit(hammer);
+            recycleHammerAndBandit(hammer, "big");
         }
     }
 
-    private void recycleHammerAndBandit(AGSprite hammer) {
+    private void recycleHammerAndBandit(AGSprite hammer, String kind) {
         for (AGSprite bandit : bandits) {
             if (hammer.collide(bandit)) {
-                // TODO: implementar pontuação exata para cada tipo de martelinho
-                positiveScoreTime += 50;
+
+                // Verifica o tipo de martelo que colidiu para pontuar corretamente
+                if (kind == "little") {
+                    positiveScoreTime += 50;
+                } else {
+                    positiveScoreTime += 25;
+                }
+
                 createExplosionAnimation(bandit.vrPosition.fX, bandit.vrPosition.fY);
                 hammer.bRecycled = true;
                 hammer.bVisible = false;
-                AGSoundManager.vrSoundEffects.play(effectDowncastBandit);
+                //AGSoundManager.vrSoundEffects.play(effectBanditsHit);
 
                 if (bandit.vrDirection.fX == 1) {
                     bandit.vrDirection.fX = -1;
@@ -572,11 +605,12 @@ public class PlayScene extends AGScene {
                 continue;
             }
             if (money.collide(couro)) {
-                negativeScoreTime -= 50;
+                //negativeScoreTime -= 50;
+                lifes--;
                 //createExplosionAnimation(couro.vrPosition.fX, couro.vrPosition.fY);
                 money.bRecycled = true;
                 money.bVisible = false;
-                //AGSoundManager.vrSoundEffects.play(effectDowncastBandit);
+                AGSoundManager.vrSoundEffects.play(effectCouroHit);
 
                 break;
             }
@@ -677,7 +711,8 @@ public class PlayScene extends AGScene {
 
     // Verifica se Couro foi derrotado
     private boolean isCouroDefeated() {
-        return score == 0 ? true : false;
+        //return score == 0 ? true : false;
+        return lifes == 0 ? true : false;
     }
 
     // Metodo criado para atualizar quadros do Placar
@@ -689,12 +724,12 @@ public class PlayScene extends AGScene {
         }
 
         // Subtrai score
-        if (negativeScoreTime < 0) {
-            negativeScoreTime++;
-            score--;
-        }
+        //if (negativeScoreTime < 0) {
+        //    negativeScoreTime++;
+        //   score--;
+        //}
 
-        if (positiveScoreTime == 0 && negativeScoreTime == 0) {
+        if (positiveScoreTime == 0) {
             for (AGSprite digito : scoreboard) {
                 digito.bVisible = true;
             }

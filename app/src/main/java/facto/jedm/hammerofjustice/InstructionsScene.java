@@ -3,9 +3,12 @@ package facto.jedm.hammerofjustice;
 import android.cg.com.megavirada.AndGraph.AGGameManager;
 import android.cg.com.megavirada.AndGraph.AGInputManager;
 import android.cg.com.megavirada.AndGraph.AGScene;
+import android.cg.com.megavirada.AndGraph.AGScreenManager;
+import android.cg.com.megavirada.AndGraph.AGSprite;
 
 
 public class InstructionsScene extends AGScene {
+    AGSprite background = null;
 
     public InstructionsScene(AGGameManager pManager) {
         super(pManager);
@@ -13,7 +16,10 @@ public class InstructionsScene extends AGScene {
 
     @Override
     public void init() {
-        setSceneBackgroundColor(0.43f, 0.48f, 0.9f);
+        background = createSprite(R.drawable.background_instructinos, 1, 1);
+        background.setScreenPercent(100, 100);
+        background.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
+        background.vrPosition.setY(AGScreenManager.iScreenHeight / 2);
     }
 
     @Override
