@@ -14,6 +14,7 @@ public class PlayScene extends AGScene {
     // Cria o Array de sprites do scoreboard
     AGSprite[] scoreboard = new AGSprite[6];
     AGSprite lifeBoard;
+    AGSprite couroHead;
 
     // Cria o vetor de tiros
     ArrayList<AGSprite> littleHammerVector = null;
@@ -202,12 +203,16 @@ public class PlayScene extends AGScene {
             }
         }
 
+        couroHead = createSprite(R.drawable.couro_head, 1, 1);
+        couroHead.setScreenPercent(9, 7);
+        couroHead.vrPosition.fY = topBar.vrPosition.fY;
+        couroHead.vrPosition.fX = AGScreenManager.iScreenWidth - 20 - couroHead.getSpriteWidth() / 2;
+        couroHead.bAutoRender = false;
 
         lifeBoard = createSprite(R.drawable.numbers, 10, 1);
-        lifeBoard.setScreenPercent(9, 6);
+        lifeBoard.setScreenPercent(6, 4);
         lifeBoard.vrPosition.fY = topBar.vrPosition.fY;
-        lifeBoard.vrPosition.fX = AGScreenManager.iScreenWidth - 20 - lifeBoard.getSpriteWidth() / 2;
-        lifeBoard.vrPosition.fX = AGScreenManager.iScreenWidth - 20 - lifeBoard.getSpriteWidth() / 2;
+        lifeBoard.vrPosition.fX = couroHead.vrPosition.fX - couroHead.getSpriteWidth() / 2 - lifeBoard.getSpriteWidth() / 2;
         lifeBoard.bAutoRender = false;
         // Cria as 10 animações pra cada dígito de vidas
         for (int i = 0; i < 10; i++) {
@@ -305,6 +310,7 @@ public class PlayScene extends AGScene {
             digito.render();
         }
         lifeBoard.render();
+        couroHead.render();
 
         // Menu de pausa
         pauseMenu.render();
@@ -373,6 +379,7 @@ public class PlayScene extends AGScene {
             updateHammers();
             updateMoney();
             updateScoreboard();
+            updateLifesBoard();
         }
     }
 
@@ -544,7 +551,7 @@ public class PlayScene extends AGScene {
                 }
 
                 AGSprite newMoney = createSprite(R.drawable.pack_of_money, 1, 1);
-                newMoney.setScreenPercent(6, 2);
+                newMoney.setScreenPercent(5, 2);
                 newMoney.vrPosition.fX = bandit.vrPosition.fX;
                 newMoney.vrPosition.fY = bandit.vrPosition.fY - (bandit.getSpriteHeight() / 2) - (newMoney.getSpriteHeight() / 2);
                 moneyVector.add(newMoney);
@@ -598,7 +605,7 @@ public class PlayScene extends AGScene {
         }
     }
 
-    // Método que verifica a colisão entre propina e couro
+    // Metodo que verifica a colisão entre propina e couro
     private void verifyMoneyCouroCollision() {
         for (AGSprite money : moneyVector) {
             if (money.bRecycled) {
@@ -668,7 +675,7 @@ public class PlayScene extends AGScene {
         }
     }
 
-    // metodo para atualizar o movimento dos martelos
+    // Metodo para atualizar o movimento dos martelos
     private void updateHammers() {
         for (AGSprite hammer : littleHammerVector) {
             if (hammer.bRecycled)
@@ -693,7 +700,7 @@ public class PlayScene extends AGScene {
         }
     }
 
-    // metodo para atualizar o movimento dos maços de dinheiro
+    // Metodo para atualizar o movimento dos maços de dinheiro
     private void updateMoney() {
         for (AGSprite money : moneyVector) {
             if (money.bRecycled)
@@ -741,6 +748,11 @@ public class PlayScene extends AGScene {
         scoreboard[2].setCurrentAnimation((score % 10000) / 1000);
         scoreboard[1].setCurrentAnimation((score % 100000) / 10000);
         scoreboard[0].setCurrentAnimation((score % 1000000) / 100000);
+    }
+
+    // Metodo criado para atualizar a quantidade de vidas
+    private void updateLifesBoard() {
+        lifeBoard.setCurrentAnimation(lifes);
 
         if (isCouroDefeated()) {
             switchGameOverMenu();
