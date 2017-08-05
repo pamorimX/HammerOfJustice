@@ -508,7 +508,7 @@ public class PlayScene extends AGScene {
             AGSprite newHammer;
             if (selectedHammer() == "little") {
                 newHammer = createSprite(R.drawable.little_hammer, 1, 1);
-                newHammer.setScreenPercent(7, 3);
+                newHammer.setScreenPercent(5, 2);
             } else {
                 newHammer = createSprite(R.drawable.big_hammer, 1, 1);
                 newHammer.setScreenPercent(8, 5);
