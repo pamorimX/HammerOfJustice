@@ -20,7 +20,7 @@ public class PlayScene extends AGScene {
     ArrayList<AGSprite> littleHammerVector = null;
     ArrayList<AGSprite> bigHammerVector = null;
     ArrayList<AGSprite> moneyVector = null;
-    ArrayList<AGSprite> condemnationVector = null;
+    ArrayList<AGSprite> explosionVector = null;
 
     AGSprite[] bandits = new AGSprite[3];
 
@@ -100,7 +100,7 @@ public class PlayScene extends AGScene {
         littleHammerVector = new ArrayList<AGSprite>();
         bigHammerVector = new ArrayList<AGSprite>();
         moneyVector = new ArrayList<AGSprite>();
-        condemnationVector = new ArrayList<AGSprite>();
+        explosionVector = new ArrayList<AGSprite>();
 
         // Carrega a imagem de fundo 100x100 no centro da tela
         background = createSprite(R.drawable.background_play, 1, 1);
@@ -382,6 +382,7 @@ public class PlayScene extends AGScene {
             createMoney();
             verifyHammerBanditsCollision();
             verifyMoneyCouroCollision();
+            verifyHammerMoneyCollision();
             updateCouroMovement();
             updateBandits();
             updateCondemnations();
@@ -647,6 +648,41 @@ public class PlayScene extends AGScene {
             couro.bVisible = true;
     }
 
+    // Metodo que verifica a colisão entre propina e martelo
+    private void verifyHammerMoneyCollision() {
+        for(AGSprite hammer: littleHammerVector) {
+            for (AGSprite money: moneyVector) {
+                if (hammer.bRecycled || money.bRecycled)
+                    continue;
+
+                if (hammer.collide(money)) {
+                    createExplosionAnimation((money.vrPosition.fX + hammer.vrPosition.fX) / 2, (money.vrPosition.fY + hammer.vrPosition.fY) / 2);
+                    money.bRecycled = true;
+                    money.bVisible = false;
+                    hammer.bRecycled = true;
+                    hammer.bVisible = false;
+                }
+            }
+        }
+
+        for(AGSprite hammer: bigHammerVector) {
+            for (AGSprite money: moneyVector) {
+                if (hammer.bRecycled)
+                    continue;
+                if (money.bRecycled)
+                    continue;
+
+                if (hammer.collide(money)) {
+                    createExplosionAnimation((money.vrPosition.fX + hammer.vrPosition.fX) / 2, (money.vrPosition.fY + hammer.vrPosition.fY) / 2);
+                    money.bRecycled = true;
+                    money.bVisible = false;
+                    hammer.bRecycled = true;
+                    hammer.bVisible = false;
+                }
+            }
+        }
+    }
+
     // Metodo criado para movimentar
     private void updateCouroMovement() {
 
@@ -691,7 +727,7 @@ public class PlayScene extends AGScene {
 
     // Metodo utilizado para reciclar o vetor de Condenação
     private void updateCondemnations() {
-        for (AGSprite comndenation : condemnationVector) {
+        for (AGSprite comndenation : explosionVector) {
             if (comndenation.getCurrentAnimation().isAnimationEnded()) {
                 comndenation.bRecycled = true;
             }
@@ -778,21 +814,21 @@ public class PlayScene extends AGScene {
 
     // Metodo utilizado para criar animação ao abater um Bandido
     private void createExplosionAnimation(float x, float y) {
-        for (AGSprite comndenation : condemnationVector) {
-            if (comndenation.bRecycled) {
-                comndenation.bRecycled = false;
-                comndenation.getCurrentAnimation().restart();
-                comndenation.vrPosition.fX = x;
-                comndenation.vrPosition.fY = y;
+        for (AGSprite explosion : explosionVector) {
+            if (explosion.bRecycled) {
+                explosion.bRecycled = false;
+                explosion.getCurrentAnimation().restart();
+                explosion.vrPosition.fX = x;
+                explosion.vrPosition.fY = y;
                 return;
             }
         }
 
-        AGSprite newCondemnation = createSprite(R.drawable.comndenation, 8, 6);
-        newCondemnation.setScreenPercent(21, 12);
-        newCondemnation.addAnimation(30, false, 0, 47);
-        newCondemnation.vrPosition.fX = x;
-        newCondemnation.vrPosition.fY = y;
-        condemnationVector.add(newCondemnation);
+        AGSprite newExplosion = createSprite(R.drawable.comndenation, 8, 6);
+        newExplosion.setScreenPercent(21, 12);
+        newExplosion.addAnimation(30, false, 0, 47);
+        newExplosion.vrPosition.fX = x;
+        newExplosion.vrPosition.fY = y;
+        explosionVector.add(newExplosion);
     }
 }
