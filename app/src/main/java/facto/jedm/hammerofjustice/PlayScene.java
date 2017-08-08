@@ -29,6 +29,7 @@ public class PlayScene extends AGScene {
     AGTimer hammerTime = null;
     AGTimer moneyTime = null;
     AGTimer ammoTime = null;
+    AGTimer damageTime = null;
 
     // Efeitos sonoros de eventos
     //int effectMovement = 0;
@@ -39,7 +40,6 @@ public class PlayScene extends AGScene {
     // Controle de saldo
     int score;
     int positiveScoreTime;
-    //int negativeScoreTime;
 
     // Controle de vidas
     int lifes;
@@ -81,9 +81,12 @@ public class PlayScene extends AGScene {
     @Override
     public void init() {
         // Parâmetros iniciais de jogo
+
+        AGSoundManager.vrMusic.loadMusic("main_sound_track.mp3", true);
+        AGSoundManager.vrMusic.setVolume(1.0f, 1.0f);
+
         score = 0;
         positiveScoreTime = 0;
-        //negativeScoreTime = 0;
 
         lifes = 5;
 
@@ -224,6 +227,7 @@ public class PlayScene extends AGScene {
         hammerTime = new AGTimer(500);
         moneyTime = new AGTimer(500);
         ammoTime = new AGTimer(2000);
+        damageTime = new AGTimer(1000);
 
         // Criando efeitos sonoros de eventos
 
@@ -247,7 +251,7 @@ public class PlayScene extends AGScene {
         bandits[1].vrDirection.fX = -1;
         bandits[1].vrPosition.fX = AGScreenManager.iScreenWidth + bandits[1].getSpriteWidth() / 2;
         //bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight();
-        bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight()/2;
+        bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight() / 2;
 
         bandits[2] = createSprite(R.drawable.toupeirona, 4, 2);
         bandits[2].setScreenPercent(20, 12);
@@ -255,7 +259,7 @@ public class PlayScene extends AGScene {
         bandits[2].vrDirection.fX = 1;
         bandits[2].vrPosition.fX = -bandits[2].getSpriteWidth() / 2;
         //bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight();
-        bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight()/2;
+        bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight() / 2;
 
         pauseMenu = createSprite(R.drawable.pause_menu, 1, 1);
         pauseMenu.setScreenPercent(76, 40);
@@ -332,6 +336,9 @@ public class PlayScene extends AGScene {
         bigHammer.render();
         hammerSelectedIndicator.render();
         shoot.render();
+
+        // Rodar a trilha sonora do jogo apenas após renderizar completamente a tela
+        AGSoundManager.vrMusic.play();
     }
 
     @Override
@@ -389,6 +396,13 @@ public class PlayScene extends AGScene {
     private void pauseEvent() {
         pause = !pause;
         switchPauseMenu();
+
+        // TODO: corrigir trecho abaixo. Não está funcionando corretamente
+        // Alternar som ao pausar ou retomar jogo
+        if (pause)
+            AGSoundManager.vrMusic.pause();
+        else
+            AGSoundManager.vrMusic.play();
     }
 
     // Alterna o menu de pausa de acordo com o estado de execução do jogo
@@ -609,21 +623,28 @@ public class PlayScene extends AGScene {
 
     // Metodo que verifica a colisão entre propina e couro
     private void verifyMoneyCouroCollision() {
+        damageTime.update();
         for (AGSprite money : moneyVector) {
             if (money.bRecycled) {
                 continue;
             }
             if (money.collide(couro)) {
-                //negativeScoreTime -= 50;
                 lifes--;
                 //createExplosionAnimation(couro.vrPosition.fX, couro.vrPosition.fY);
                 money.bRecycled = true;
                 money.bVisible = false;
                 AGSoundManager.vrSoundEffects.play(effectCouroHit);
+                damageTime.restart();
 
                 break;
             }
         }
+
+        // Efeito visual ao receber dano de propina
+        if (!damageTime.isTimeEnded() && lifes != 0)
+            couro.bVisible = !couro.bVisible;
+        else
+            couro.bVisible = true;
     }
 
     // Metodo criado para movimentar
@@ -682,17 +703,17 @@ public class PlayScene extends AGScene {
         for (AGSprite hammer : littleHammerVector) {
             if (hammer.bRecycled)
                 continue;
-            teste(hammer);
+            moveAndRecycleHammer(hammer);
         }
 
         for (AGSprite hammer : bigHammerVector) {
             if (hammer.bRecycled)
                 continue;
-            teste(hammer);
+            moveAndRecycleHammer(hammer);
         }
     }
 
-    private void teste(AGSprite hammer) {
+    private void moveAndRecycleHammer(AGSprite hammer) {
         hammer.vrPosition.fY += 10;
         hammer.fAngle += 15;
 
@@ -731,12 +752,6 @@ public class PlayScene extends AGScene {
             positiveScoreTime--;
             score++;
         }
-
-        // Subtrai score
-        //if (negativeScoreTime < 0) {
-        //    negativeScoreTime++;
-        //   score--;
-        //}
 
         if (positiveScoreTime == 0) {
             for (AGSprite digito : scoreboard) {

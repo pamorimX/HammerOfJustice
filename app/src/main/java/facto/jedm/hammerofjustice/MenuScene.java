@@ -22,9 +22,8 @@ public class MenuScene extends AGScene {
     @Override
     public void init() {
         // Carregando trilha sonora e mantendo-a em repetição
-        AGSoundManager.vrMusic.loadMusic("main_sound_track.mp3", true);
+        AGSoundManager.vrMusic.loadMusic("menu_sound_track.mp3", true);
         AGSoundManager.vrMusic.setVolume(1.0f, 1.0f);
-        AGSoundManager.vrMusic.play();
 
         // Carregando plano de fundo
         setSceneBackgroundColor(0.43f, 0.48f, 0.9f);
@@ -63,6 +62,12 @@ public class MenuScene extends AGScene {
         instructionsButton.vrPosition.setY(quitButton.vrPosition.fY + spaceBetweenButtons + instructionsButton.getSpriteHeight());
         creditsButton.vrPosition.setY(instructionsButton.vrPosition.fY + spaceBetweenButtons + creditsButton.getSpriteHeight());
         playButton.vrPosition.setY(creditsButton.vrPosition.fY + spaceBetweenButtons + playButton.getSpriteHeight());
+    }
+
+    @Override
+    public void render() {
+        super.render();
+        AGSoundManager.vrMusic.play();
     }
 
     @Override
