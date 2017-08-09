@@ -29,6 +29,7 @@ public class PlayScene extends AGScene {
     AGTimer hammerTime = null;
     AGTimer moneyTime = null;
     AGTimer ammoTime = null;
+    AGTimer emptyAmmoTime = null;
     AGTimer damageTime = null;
 
     // Efeitos sonoros de eventos
@@ -36,6 +37,7 @@ public class PlayScene extends AGScene {
     int effectCouroHit = 0;
     int effectLaunchHammer = 0;
     int effectLaunchMoney = 0;
+    int effectEmptyAmmo = 0;
 
     // Controle de saldo
     int score;
@@ -83,7 +85,7 @@ public class PlayScene extends AGScene {
         // Parâmetros iniciais de jogo
 
         AGSoundManager.vrMusic.loadMusic("main_sound_track.mp3", true);
-        AGSoundManager.vrMusic.setVolume(1.0f, 1.0f);
+        AGSoundManager.vrMusic.setVolume(0.04f, 0.04f);
 
         score = 0;
         positiveScoreTime = 0;
@@ -227,6 +229,7 @@ public class PlayScene extends AGScene {
         hammerTime = new AGTimer(500);
         moneyTime = new AGTimer(500);
         ammoTime = new AGTimer(2000);
+        emptyAmmoTime = new AGTimer(1000);
         damageTime = new AGTimer(1000);
 
         // Criando efeitos sonoros de eventos
@@ -235,6 +238,7 @@ public class PlayScene extends AGScene {
         effectCouroHit = AGSoundManager.vrSoundEffects.loadSoundEffect("couro_hit.mp3");
         effectLaunchHammer = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_hammer.wav");
         effectLaunchMoney = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_money.wav");
+        effectEmptyAmmo = AGSoundManager.vrSoundEffects.loadSoundEffect("empty_ammo.ogg");
 
         // Carrega os sprites dos bandits
         bandits[0] = createSprite(R.drawable.molusco, 6, 4);
@@ -492,6 +496,11 @@ public class PlayScene extends AGScene {
 
             // Impede de atirar quando esvaziar a ammoBar
             if (!fullAmmoBar.collide(emptyAmmoBar)) {
+                emptyAmmoTime.update();
+                if(!emptyAmmoTime.isTimeEnded()) {
+                    emptyAmmoTime.restart();
+                    AGSoundManager.vrSoundEffects.play(effectEmptyAmmo);
+                }
                 return;
             }
 
@@ -515,7 +524,8 @@ public class PlayScene extends AGScene {
                 if (hammer.bRecycled) {
                     hammer.bRecycled = false;
                     hammer.bVisible = true;
-                    hammer.vrPosition.fX = couro.vrPosition.fX;
+                    //hammer.vrPosition.fX = couro.vrPosition.fX;
+                    hammer.vrPosition.fX = couro.vrPosition.fX + couro.getSpriteWidth() / 3;
                     hammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + hammer.getSpriteHeight() / 2;
                     return;
                 }
@@ -531,7 +541,8 @@ public class PlayScene extends AGScene {
                 newHammer.setScreenPercent(8, 5);
             }
 
-            newHammer.vrPosition.fX = couro.vrPosition.fX;
+            //newHammer.vrPosition.fX = couro.vrPosition.fX;
+            newHammer.vrPosition.fX = couro.vrPosition.fX + couro.getSpriteWidth() / 3;
             newHammer.vrPosition.fY = bottomBar.getSpriteHeight() + couro.getSpriteHeight() + newHammer.getSpriteHeight() / 2;
             (selectedHammer() == "little" ? littleHammerVector : bigHammerVector).add(newHammer);
         }
@@ -603,7 +614,7 @@ public class PlayScene extends AGScene {
                     positiveScoreTime += 25;
                 }
 
-                createExplosionAnimation(bandit.vrPosition.fX, bandit.vrPosition.fY);
+                createExplosionAnimation((bandit.vrPosition.fX + hammer.vrPosition.fX) / 2, (bandit.vrPosition.fY + hammer.vrPosition.fY) / 2);
                 hammer.bRecycled = true;
                 hammer.bVisible = false;
                 //AGSoundManager.vrSoundEffects.play(effectBanditsHit);
@@ -650,8 +661,8 @@ public class PlayScene extends AGScene {
 
     // Metodo que verifica a colisão entre propina e martelo
     private void verifyHammerMoneyCollision() {
-        for(AGSprite hammer: littleHammerVector) {
-            for (AGSprite money: moneyVector) {
+        for (AGSprite hammer : littleHammerVector) {
+            for (AGSprite money : moneyVector) {
                 if (hammer.bRecycled || money.bRecycled)
                     continue;
 
@@ -665,11 +676,9 @@ public class PlayScene extends AGScene {
             }
         }
 
-        for(AGSprite hammer: bigHammerVector) {
-            for (AGSprite money: moneyVector) {
-                if (hammer.bRecycled)
-                    continue;
-                if (money.bRecycled)
+        for (AGSprite hammer : bigHammerVector) {
+            for (AGSprite money : moneyVector) {
+                if (hammer.bRecycled || money.bRecycled)
                     continue;
 
                 if (hammer.collide(money)) {

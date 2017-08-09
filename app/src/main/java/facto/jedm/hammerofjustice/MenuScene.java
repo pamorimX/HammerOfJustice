@@ -15,6 +15,8 @@ public class MenuScene extends AGScene {
     private AGSprite instructionsButton = null;
     private AGSprite quitButton = null;
 
+    int effectButtonClick = 0;
+
     public MenuScene(AGGameManager pManager) {
         super(pManager);
     }
@@ -23,7 +25,8 @@ public class MenuScene extends AGScene {
     public void init() {
         // Carregando trilha sonora e mantendo-a em repetição
         AGSoundManager.vrMusic.loadMusic("menu_sound_track.mp3", true);
-        AGSoundManager.vrMusic.setVolume(1.0f, 1.0f);
+        AGSoundManager.vrMusic.setVolume(0.08f, 0.08f);
+        effectButtonClick = AGSoundManager.vrSoundEffects.loadSoundEffect("button_click.wav");
 
         // Carregando plano de fundo
         setSceneBackgroundColor(0.43f, 0.48f, 0.9f);
@@ -80,18 +83,22 @@ public class MenuScene extends AGScene {
     public void loop() {
         if (AGInputManager.vrTouchEvents.screenClicked()) {
             if (playButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                AGSoundManager.vrSoundEffects.play(effectButtonClick);
                 vrGameManager.setCurrentScene(1);
             }
 
             else if (creditsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                AGSoundManager.vrSoundEffects.play(effectButtonClick);
                 vrGameManager.setCurrentScene(2);
             }
 
             else if (instructionsButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                AGSoundManager.vrSoundEffects.play(effectButtonClick);
                 vrGameManager.setCurrentScene(3);
             }
 
             else if (quitButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                AGSoundManager.vrSoundEffects.play(effectButtonClick);
                 vrGameManager.vrActivity.finish();
             }
         }

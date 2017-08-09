@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 public class SplashScreen extends AppCompatActivity {
-    // TODO: alterar TIME_SPLASH (em milisegundos) para 2000 ou mais
     private static final int TIME_SPLASH = 3000;
 
     @Override
