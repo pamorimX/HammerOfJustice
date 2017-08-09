@@ -38,6 +38,7 @@ public class PlayScene extends AGScene {
     int effectLaunchHammer = 0;
     int effectLaunchMoney = 0;
     int effectEmptyAmmo = 0;
+    int effectButtonClick = 0;
 
     // Controle de saldo
     int score;
@@ -239,6 +240,7 @@ public class PlayScene extends AGScene {
         effectLaunchHammer = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_hammer.wav");
         effectLaunchMoney = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_money.wav");
         effectEmptyAmmo = AGSoundManager.vrSoundEffects.loadSoundEffect("empty_ammo.ogg");
+        effectButtonClick = AGSoundManager.vrSoundEffects.loadSoundEffect("button_click.wav");
 
         // Carrega os sprites dos bandits
         bandits[0] = createSprite(R.drawable.molusco, 6, 4);
@@ -356,14 +358,17 @@ public class PlayScene extends AGScene {
     @Override
     public void loop() {
         if (AGInputManager.vrTouchEvents.backButtonClicked() && !gameOver) {
+            AGSoundManager.vrSoundEffects.play(effectButtonClick);
             pauseEvent();
         }
 
         // Jogo pausado
         if (pause) {
             if (resumeGameButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                AGSoundManager.vrSoundEffects.play(effectButtonClick);
                 pauseEvent();
             } else if (quitGameButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                AGSoundManager.vrSoundEffects.play(effectButtonClick);
                 vrGameManager.setCurrentScene(0);
             }
         }
@@ -371,8 +376,10 @@ public class PlayScene extends AGScene {
         // Game Over
         else if (gameOver) {
             if (restartGameButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                AGSoundManager.vrSoundEffects.play(effectButtonClick);
                 init();
             } else if (goHomeMenuButton.collide(AGInputManager.vrTouchEvents.getLastPosition())) {
+                AGSoundManager.vrSoundEffects.play(effectButtonClick);
                 vrGameManager.setCurrentScene(0);
             }
         }
