@@ -7,7 +7,6 @@ import android.cg.com.megavirada.AndGraph.AGScreenManager;
 import android.cg.com.megavirada.AndGraph.AGSoundManager;
 import android.cg.com.megavirada.AndGraph.AGSprite;
 import android.cg.com.megavirada.AndGraph.AGTimer;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -51,6 +50,7 @@ public class PlayScene extends AGScene {
     // Controle de munição gasta e recuperada
     int ammoSpent;
     int ammoRecovered;
+    int ammoPercent;
 
     // Controles de paralisação
     boolean pause;
@@ -86,11 +86,6 @@ public class PlayScene extends AGScene {
     public void init() {
         // Parâmetros iniciais de jogo
 
-        // Rodar a trilha sonora do jogo apenas após renderizar completamente a tela
-        AGSoundManager.vrMusic.loadMusic("main_sound_track.mp3", true);
-        AGSoundManager.vrMusic.setVolume(0.04f, 0.04f);
-        AGSoundManager.vrMusic.play();
-
         score = 0;
         positiveScoreTime = 0;
 
@@ -98,6 +93,8 @@ public class PlayScene extends AGScene {
 
         ammoSpent = 0;
         ammoRecovered = 0;
+        // Largura dividido por 20 = 5%
+        ammoPercent = AGScreenManager.iScreenWidth / 20;
 
         pause = false;
         gameOver = false;
@@ -259,7 +256,6 @@ public class PlayScene extends AGScene {
         bandits[1].addAnimation(10, true, 0, 7);
         bandits[1].vrDirection.fX = -1;
         bandits[1].vrPosition.fX = AGScreenManager.iScreenWidth + bandits[1].getSpriteWidth() / 2;
-        //bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight();
         bandits[1].vrPosition.fY = bandits[0].vrPosition.fY - bandits[1].getSpriteHeight() / 2;
 
         bandits[2] = createSprite(R.drawable.toupeirona, 4, 2);
@@ -267,7 +263,6 @@ public class PlayScene extends AGScene {
         bandits[2].addAnimation(10, true, 0, 7);
         bandits[2].vrDirection.fX = 1;
         bandits[2].vrPosition.fX = -bandits[2].getSpriteWidth() / 2;
-        //bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight();
         bandits[2].vrPosition.fY = bandits[1].vrPosition.fY - bandits[2].getSpriteHeight() / 2;
 
         pauseMenu = createSprite(R.drawable.pause_menu, 1, 1);
@@ -311,6 +306,11 @@ public class PlayScene extends AGScene {
         goHomeMenuButton.vrPosition.fY = gameOverMenu.vrPosition.fY - restartGameButton.getSpriteHeight() - goHomeMenuButton.getSpriteHeight() / 2;
         goHomeMenuButton.bVisible = false;
         goHomeMenuButton.bAutoRender = false;
+
+        // Rodar a trilha sonora do jogo
+        AGSoundManager.vrMusic.loadMusic("main_sound_track.mp3", true);
+        AGSoundManager.vrMusic.setVolume(0.04f, 0.04f);
+        AGSoundManager.vrMusic.play();
     }
 
     @Override
@@ -460,7 +460,7 @@ public class PlayScene extends AGScene {
 
         if (fullAmmoBar.vrPosition.fX != emptyAmmoBar.vrPosition.fX) {
             if (ammoTime.isTimeEnded()) {
-                ammoRecovered += 20;
+                ammoRecovered += ammoPercent;
                 ammoTime.restart();
             }
         }
@@ -516,9 +516,9 @@ public class PlayScene extends AGScene {
 
             // Atualizando gasto com munição de acordo com o martelo atirado
             if (selectedHammer() == "little") {
-                ammoSpent -= 150;
+                ammoSpent -= ammoPercent * 3;
             } else {
-                ammoSpent -= 100;
+                ammoSpent -= ammoPercent * 2;
             }
 
             // Anima o lançamento do martelinho
