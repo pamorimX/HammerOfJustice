@@ -7,6 +7,7 @@ import android.cg.com.megavirada.AndGraph.AGScreenManager;
 import android.cg.com.megavirada.AndGraph.AGSoundManager;
 import android.cg.com.megavirada.AndGraph.AGSprite;
 import android.cg.com.megavirada.AndGraph.AGTimer;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -85,8 +86,10 @@ public class PlayScene extends AGScene {
     public void init() {
         // Parâmetros iniciais de jogo
 
+        // Rodar a trilha sonora do jogo apenas após renderizar completamente a tela
         AGSoundManager.vrMusic.loadMusic("main_sound_track.mp3", true);
         AGSoundManager.vrMusic.setVolume(0.04f, 0.04f);
+        AGSoundManager.vrMusic.play();
 
         score = 0;
         positiveScoreTime = 0;
@@ -139,10 +142,10 @@ public class PlayScene extends AGScene {
         // Carrega a imagem de Coro na base da tela
         couro = createSprite(R.drawable.couro, 4, 4);
         couro.setScreenPercent(25, 10);
-        couro.addAnimation(1, false, 0);
-        couro.addAnimation(30, false, 0, 12);
         couro.vrPosition.setX(AGScreenManager.iScreenWidth / 2);
         couro.vrPosition.setY(bottomBar.getSpriteHeight() + (couro.getSpriteHeight() / 2));
+        couro.addAnimation(1, false, 0);
+        couro.addAnimation(30, false, 0, 12);
 
         // Carrega setas direcionais
         arrowLeft = createSprite(R.drawable.arrow, 1, 1);
@@ -230,7 +233,7 @@ public class PlayScene extends AGScene {
         hammerTime = new AGTimer(500);
         moneyTime = new AGTimer(500);
         ammoTime = new AGTimer(2000);
-        emptyAmmoTime = new AGTimer(1000);
+        emptyAmmoTime = new AGTimer(250);
         damageTime = new AGTimer(1000);
 
         // Criando efeitos sonoros de eventos
@@ -239,7 +242,7 @@ public class PlayScene extends AGScene {
         effectCouroHit = AGSoundManager.vrSoundEffects.loadSoundEffect("couro_hit.mp3");
         effectLaunchHammer = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_hammer.wav");
         effectLaunchMoney = AGSoundManager.vrSoundEffects.loadSoundEffect("launch_money.wav");
-        effectEmptyAmmo = AGSoundManager.vrSoundEffects.loadSoundEffect("empty_ammo.ogg");
+        effectEmptyAmmo = AGSoundManager.vrSoundEffects.loadSoundEffect("empty_ammo.wav");
         effectButtonClick = AGSoundManager.vrSoundEffects.loadSoundEffect("button_click.wav");
 
         // Carrega os sprites dos bandits
@@ -342,9 +345,6 @@ public class PlayScene extends AGScene {
         bigHammer.render();
         hammerSelectedIndicator.render();
         shoot.render();
-
-        // Rodar a trilha sonora do jogo apenas após renderizar completamente a tela
-        AGSoundManager.vrMusic.play();
     }
 
     @Override
@@ -411,10 +411,11 @@ public class PlayScene extends AGScene {
 
         // TODO: corrigir trecho abaixo. Não está funcionando corretamente
         // Alternar som ao pausar ou retomar jogo
-        if (pause)
+        if (pause) {
             AGSoundManager.vrMusic.pause();
-        else
+        } else {
             AGSoundManager.vrMusic.play();
+        }
     }
 
     // Alterna o menu de pausa de acordo com o estado de execução do jogo
@@ -504,7 +505,7 @@ public class PlayScene extends AGScene {
             // Impede de atirar quando esvaziar a ammoBar
             if (!fullAmmoBar.collide(emptyAmmoBar)) {
                 emptyAmmoTime.update();
-                if(!emptyAmmoTime.isTimeEnded()) {
+                if (emptyAmmoTime.isTimeEnded()) {
                     emptyAmmoTime.restart();
                     AGSoundManager.vrSoundEffects.play(effectEmptyAmmo);
                 }
